@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>ShitSpin</title>
+  <link rel="stylesheet" type="text/css" href="./editor.css" /><!-- JS -->
+  <script type="text/javascript" src="./src/library/jquery/jquery.js"></script>
+  <script type="text/javascript" src="./src/TextArea.js"></script>
+  <script type='text/javascript'>
+
+    $(document).ready(function(){
+      var textarea = new TextArea();
+      window.myEditor = textarea; // for debuging
+    });
+
+  </script>
+
+</head>
+<body>
+    <canvas id='textarea' width="100" height="100"> </canvas>
+</body>
+</html>

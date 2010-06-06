@@ -1,0 +1,11 @@
+html, body{
+  margin:0;
+  padding:0;
+  overflow: hidden;
+  background-color:#fff;
+}
+
+#textarea {
+  background-color:#182C4F;
+  /* cursor: text; */
+}
