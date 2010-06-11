@@ -85,22 +85,28 @@ Editor.keyhandlers = {
         col = Editor.cursor.col,
         row = Editor.cursor.row;
 
-    // The next row is doesnt exist
-    if (!Editor.text[Editor.cursor.row + 1]) {
+    // The next row is exist
+    if (typeof(Editor.text[Editor.cursor.row + 1]) !== 'undefined') {
+
+      textBeforeCursor = Editor.text[row].substr(0, col + 1);
+      textAfterCursor = Editor.text[row].substr(col + 1);
+
+      // Set the text after the cursor to the current row
+      Editor.text[row] = textAfterCursor;
+
+      // Insert the text before the cursor before the current line
+      Editor.text.splice(row, 0, textBeforeCursor);
+
+    }
+    else {
+      // The row does not exist
       Editor.text[Editor.cursor.row + 1] = ''; // create an empty row
     }
 
-    textBeforeCursor = Editor.text[row].substr(0, col + 1);
-    textAfterCursor = Editor.text[row].substr(col + 1);
-
-    Editor.text[row] = textAfterCursor;
-
-    Editor.text.splice(row, 0, textBeforeCursor);
-
-    Editor.cursor.moveHome();
-
-    // Move the cursor to the next row
+    // Move the cursor to the home of the next row
     Editor.cursor.moveDown();
+    
+    Editor.cursor.moveHome();
 
     return false;
   },
