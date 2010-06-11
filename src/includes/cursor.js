@@ -55,18 +55,23 @@ Editor.cursor = {
   
   moveDown: function () {
 
+    var row = Editor.cursor.row;
+
     // We are at NOT at the end of all rows
-    if (Editor.cursor.row + 1 < Editor.text.length) {
+    if (row + 1 < Editor.text.length) {
       Editor.cursor.row += 1;
     }
 
     // If the row we moved to is empty
-    if (Editor.text[Editor.cursor.row] === "") {
+    if (Editor.text[row + 1] === "") {
       Editor.cursor.moveHome();
     }
 
-    // The row we moved to has less lines than the previous line
-    if (Editor.text[Editor.cursor.row].length < Editor.text[Editor.cursor.row - 1].length) {
+    // The row we moved to has less lines than the previous line (and exists!)
+    if (
+      typeof(Editor.text[row + 1]) !== 'undefined' &&
+      Editor.cursor.col > Editor.text[row + 1].length - 1
+    ) {
       Editor.cursor.moveEnd(); // go to the end of the line
     }
 
@@ -81,15 +86,16 @@ Editor.cursor = {
     }
 
     // If the row we moved to is empty
-    if (Editor.text[row] === "") {
+    if (Editor.text[row - 1] === "") {
       Editor.cursor.moveHome(); // go to the first line
     }
 
-    // The row we moved to has less lines than the previous line
-    if (Editor.text[row].length < Editor.text[row + 1].length) {
+    if (
+      typeof(Editor.text[row - 1]) !== 'undefined' &&
+      Editor.cursor.col > Editor.text[row - 1].length -1
+  ) {
       Editor.cursor.moveEnd(); // go to the end of the line
     }
-
 
   },
 
@@ -98,19 +104,21 @@ Editor.cursor = {
     if (Editor.cursor.col >= 0) {
       Editor.cursor.moveTo(Editor.cursor.col - 1);
     }
-    else {
+    else if (Editor.cursor.row > 0) {
       Editor.cursor.moveUp();
+      Editor.cursor.moveEnd();
     }
 
   },
 
   moveRight: function () {
 
-    if (Editor.cursor.col < Editor.text[Editor.cursor.row].length) {
+    if (Editor.cursor.col + 1 < Editor.text[Editor.cursor.row].length) {
       Editor.cursor.moveTo(Editor.cursor.col + 1);
     }
-    else {
+    else if (Editor.cursor.row + 1 < Editor.text.length) {
       Editor.cursor.moveDown();
+      Editor.cursor.moveHome();
     }
 
   },
