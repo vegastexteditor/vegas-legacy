@@ -1,21 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>ShitSpin</title>
+  <title>ShitSpun</title>
   <link rel="stylesheet" type="text/css" href="./editor.css" /><!-- JS -->
-  <script type="text/javascript" src="./src/library/jquery/jquery.js"></script>
-  <script type="text/javascript" src="./src/TextArea.js"></script>
+  <script type="text/javascript" src="./src/library/jquery/jquery-1.4.2.js"></script>
+  <script type="text/javascript" src="./src/library/jqueryhotkeys/jquery.hotkeys.js"></script>
+
+  <script type="text/javascript" src="./src/editor.js"></script>
+  <script type="text/javascript" src="./src/settings.js"></script>
+  <script type="text/javascript" src="./src/includes/setup.js"></script>
+  <script type="text/javascript" src="./src/includes/cursor.js"></script>
+  <script type="text/javascript" src="./src/includes/select.js"></script>
+  <script type="text/javascript" src="./src/includes/command.js"></script>
+  <script type="text/javascript" src="./src/includes/viewport.js"></script>
+  <script type="text/javascript" src="./src/includes/handlers.js"></script>
+  <script type="text/javascript" src="./src/includes/keyMappings.js"></script>
+  <script type="text/javascript" src="./src/includes/core.js"></script>
+  
   <script type='text/javascript'>
 
     $(document).ready(function(){
-      var textarea = new TextArea();
-      window.myEditor = textarea; // for debuging
+      Editor.init();
+      Editor.openFile('./alice.txt');
     });
 
   </script>
 
 </head>
 <body>
-    <canvas id='textarea' width="100" height="100"> </canvas>
+  <div class="wrapper">
+    <canvas id='textarea'></canvas>
+  </div>
+  <div class="sidebar">
+    <ul>
+      <li>
+        <a href="#" onclick="Editor.openFile('./src/library/jquery/jquery-1.4.2.js');return false;">
+          Open jQuery
+        </a>
+      </li>
+      <li>
+        <a href="#" onclick="Editor.openFile('./src/includes/core.js');return false;">
+          Core
+        </a>
+      </li>
+      <li>
+        <a href="#" onclick="Editor.openFile('./alice.txt');return false;">
+          Open Alice In Wonder Land
+        </a>
+      </li>
+    </ul>
+  </div>
 </body>
 </html>

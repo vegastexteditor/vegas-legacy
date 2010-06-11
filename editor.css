@@ -9,3 +9,9 @@ html, body{
   background-color:#182C4F;
   /* cursor: text; */
 }
+.sidebar{
+  float:left;
+}
+.wrapper{
+  float: left;
+}
