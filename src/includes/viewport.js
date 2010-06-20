@@ -34,7 +34,6 @@ Editor.scroll = {
   },
 
   onStop: function (startEvent, stopEvent) {
-    console.log('stoping');
     Editor.lastPos =  Editor.scroll.handleY;
   },
 

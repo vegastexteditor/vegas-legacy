@@ -267,20 +267,21 @@ Editor.cursor = {
 
   moveTo: function (col, row, left, top) {
 
+    if (typeof(row) !== 'undefined') {
+      Editor.cursor.row = row;
+    }
 
-      if (typeof(col) !== 'undefined') {
-        Editor.cursor.col = col;
+    if (typeof(col) !== 'undefined') {
+      Editor.cursor.col = col;
 
-        var textToMeasure = Editor.text[Editor.cursor.row].substring(0,Editor.cursor.col + 1);
-        var textWidthBeforeCursor = Editor.core.ctx.measureText(textToMeasure).width;
+      // @todo: If left is passed in thats one less heavy calculation
+      // (may have already been calculated)
+      var textToMeasure = Editor.text[Editor.cursor.row].substring(0, col + 1);
+      var textWidthBeforeCursor = Editor.core.ctx.measureText(textToMeasure).width;
 
-        Editor.cursor.pixelsLeft = textWidthBeforeCursor + Editor.position.left;
+      Editor.cursor.pixelsLeft = textWidthBeforeCursor + Editor.position.left;
 
-      }
-
-      if (typeof(row) !== 'undefined') {
-        Editor.cursor.row = row;
-      }
+    }
 
   }
 

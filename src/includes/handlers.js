@@ -9,6 +9,12 @@ Editor.keyhandlers = {
         row = Editor.cursor.row,
         col = Editor.cursor.col;
 
+    // Text is currently selected
+    if (Editor.select.selectedText.length > 0) {
+       Editor.select.removeSelection();
+      return false;
+    }
+
     // If the line is empty already go to the previous line.
     if (!text[row] || text[row] === "") {
 
@@ -161,6 +167,14 @@ Editor.keyhandlers = {
 
   handleCommandMode: function (){
     Editor.mode = 'command';
+  },
+
+  handleCopy: function () {
+    Editor.clipboard = Editor.select.selectedText;
+  },
+
+  handlePaste: function () {
+    Editor.insertText(Editor.clipboard);
   }
   
 };

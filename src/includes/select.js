@@ -55,8 +55,21 @@ Editor.select = {
 
   },
 
+  removeSelection: function () {
+
+    Editor.removeText(
+      Editor.select.selectedTextInfo.startRow,
+      Editor.select.selectedTextInfo.startCol,
+      Editor.select.selectedText
+    );
+
+    Editor.select.unselect();
+    
+  },
+
   unselect: function() {
     Editor.select.draw = [];
+    Editor.select.selectedText = [];
   },
 
   onStart: function (eStart, eMove, self) {
@@ -185,10 +198,18 @@ Editor.select = {
       if (movingLeftFromStart) { // Moving left
         textBeforeSelectStart = Editor.text[row].substr(0,  endCol + 1);
         selectedText = Editor.text[row].substring(endCol + 1, startCol + 1);
+
+        // @todo: left position has already been calculated pass it in
+        Editor.cursor.moveTo(textBeforeSelectStart.length -1, row)
+
       }
       else { // moving right
         textBeforeSelectStart = Editor.text[row].substr(0, startCol + 1);
         selectedText = Editor.text[row].substring(startCol + 1, endCol + 1);
+
+        // @todo: left position has already been calculated pass it in
+        Editor.cursor.moveTo(textBeforeSelectStart.length + selectedText.length -1, row)
+      
       }
 
       x = Editor.core.ctx.measureText(textBeforeSelectStart).width + Editor.position.left;
@@ -202,6 +223,21 @@ Editor.select = {
 
       // Fill up the array of text that has just been selected
       Editor.select.selectedText.push(selectedText);
+      
+       var firstCol;
+
+      if (movingLeftFromStart) {
+        firstCol = endCol;
+      }
+      else {
+        firstCol = startCol;
+      }
+      
+      // Going to need this for: inserting over selected text
+      Editor.select.selectedTextInfo = {
+        'startCol' : firstCol,
+        'startRow' : startRow
+      };
 
       if (rects.length > 0) {
         Editor.select.draw = rects;
@@ -252,12 +288,20 @@ Editor.select = {
 
         // add to the array of rectangles the painter function will need to draw
         rects.push([x, y, w, h]);
-
+      // Going to need this for: inserting over selected text
+      Editor.select.selectedTextInfo = {
+        'startCol' : endCol,
+        'startRow' : endRow
+      };
         // Fill up the array of text that has just been selected
         Editor.select.selectedText.push(selectedText);
-        Editor.select.selectedText.reverse();
 
       }
+      
+      Editor.select.selectedText.reverse();
+
+      // @todo: left position has already been calculated
+      Editor.cursor.moveTo(textBeforeSelectStart.length -1, row + 1)
 
       if (rects.length > 0) {
         Editor.select.draw = rects;
@@ -305,11 +349,19 @@ Editor.select = {
 
       // add to the array of rectangles the painter function will need to draw
       rects.push([x, y, w, h]);
+      // Going to need this for: inserting over selected text
+      Editor.select.selectedTextInfo = {
+        'startCol' : startCol,
+        'startRow' : startRow
+      };
 
       // Fill up the array of text that has just been selected
       Editor.select.selectedText.push(selectedText);
 
       }
+
+      // @todo: left position has already been calculated
+      Editor.cursor.moveTo(selectedText.length -1, row - 1)
 
       if (rects.length > 0) {
         Editor.select.draw = rects;

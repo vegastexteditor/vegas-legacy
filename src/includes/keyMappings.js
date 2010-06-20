@@ -18,7 +18,9 @@ Editor.keyMapings = {
       'tab' : 'handleTab',
       'esc' : 'handleCommandMode',
       'ctrl+left' : 'handleNextLogicalLeft',
-      'ctrl+right' : 'handleNextLogicalRight'
+      'ctrl+right' : 'handleNextLogicalRight',
+      'ctrl+c' : 'handleCopy',
+      'ctrl+v' : 'handlePaste'
     },
 
     'sequences' : {
