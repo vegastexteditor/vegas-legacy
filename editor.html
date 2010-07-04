@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>ShitSpun</title>
+  <link rel="stylesheet" type="text/css" href="./editor.css" /><!-- JS -->
+  <script type="text/javascript" src="./src/library/jquery/jquery-1.4.2.js"></script>
+  <script type="text/javascript" src="./src/library/jqueryhotkeys/jquery.hotkeys.js"></script>
+
+  <script type="text/javascript" src="./src/editor/editor.js"></script>
+  <script type="text/javascript" src="./settings.js"></script>
+  <script type="text/javascript" src="./src/editor/setup.js"></script>
+  <script type="text/javascript" src="./src/editor/cursor.js"></script>
+  <script type="text/javascript" src="./src/editor/select.js"></script>
+  <script type="text/javascript" src="./src/editor/clipboard.js"></script>
+  <script type="text/javascript" src="./src/editor/command.js"></script>
+  <script type="text/javascript" src="./src/editor/viewport.js"></script>
+  <script type="text/javascript" src="./src/editor/handlers.js"></script>
+  <script type="text/javascript" src="./src/editor/keyMappings.js"></script>
+  <script type="text/javascript" src="./src/editor/core.js"></script>
+  
+  <script type='text/javascript'>
+
+    $(document).ready(function(){
+      var editArea = document.getElementById('editarea');
+      Editor.init(editArea);
+      Editor.openFile('/src/tests/files/alice.txt');
+    });
+
+  </script>
+
+</head>
+<body>
+  <div class="wrapper">
+    <canvas id='editarea'></canvas>
+  </div>
+</body>
+</html>

@@ -6,7 +6,7 @@ html, body{
 }
 
 #textarea {
-  background-color:#182C4F;
+  background-color:#fff;
   /* cursor: text; */
 }
 .sidebar{
@@ -14,4 +14,13 @@ html, body{
 }
 .wrapper{
   float: left;
+}
+
+#psuedoScroll{
+  height:4000px;
+}
+
+#container{
+  height:5000px;
+  overflow:scroll;
 }
