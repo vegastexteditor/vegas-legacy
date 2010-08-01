@@ -10,7 +10,7 @@
  * [X] cursor placement with mouse,
  * [x] webkit support (all keys)
  * [-] scrolling,
- * [ ] shortcut combos, ctrl+c, ctrl+v, ctrl+left, ctrl+right, etc
+ * [ ] shortcut combos, ctrl+c, ctrl+v,  ctrl+left, ctrl+right, etc
  * [ ] pageUp, PageDown,
  * [ ] backspace incomplete,
  * [ ] tabs are ghetto,
@@ -22,10 +22,13 @@
  *
  */
 
-Editor.init = function(){
+Editor.init = function(editArea){
+
+    Editor.canvas = editArea;
 
     // Perform setup tasks
     Editor.core.setupCanvas();
+    Editor.core.setupText();
     Editor.viewport.setup();
     Editor.core.attachEvents();
     Editor.core.startPaint();
@@ -37,14 +40,25 @@ Editor.init = function(){
 Editor.core = {
 
   setupCanvas: function () {
-
-    Editor.canvas = window.document.getElementById('textarea');
+    
     Editor.core.ctx = Editor.canvas.getContext('2d');
 
     Editor.canvas.width = Editor.width;
     Editor.canvas.height = Editor.height;
 
     Editor.core.viewableHeight = Math.floor(Editor.height / Editor.font.height);
+
+  },
+
+  setupText: function () {
+
+    var ctx = Editor.core.ctx;
+    
+    ctx.fillStyle = "rgb(255, 255, 255)";
+    ctx.font = Editor.font.style;
+    ctx.textBaseline = 'bottom';
+
+    Editor.core.checkFixedWidth();
 
   },
 
@@ -128,13 +142,8 @@ Editor.core = {
 
   paintText: function () {
 
-    var ctx = Editor.core.ctx,
-        row = Editor.cursor.row,
+    var row = Editor.cursor.row,
         posTop;
-
-    ctx.fillStyle = "rgb(255, 255, 255)";
-    ctx.font = Editor.font.style;
-    ctx.textBaseline = 'bottom';
 
     for (row =  Editor.scroll.charsFromtop; row < Editor.scroll.charsFromtop + Editor.core.viewableHeight; row++) {
 
@@ -145,12 +154,62 @@ Editor.core = {
 
       posTop = (Editor.font.height * (row - Editor.scroll.charsFromtop + 1)) + Editor.position.top;
 
-      ctx.fillText(
+      Editor.core.ctx.fillText(
         Editor.text[row],
         Editor.position.left,
         posTop
       );
 
+    }
+
+  },
+
+  /*
+   * Determine if the font is truely fixed width.
+   * 
+   * Accuracy is the priority here since this could screw up the application
+   * royally if we get this wrong.
+   *
+   * use Editor.font.fixedWidth instead of always calling this function.
+   *
+   * checkFixedWidth should be ran at runtime.
+   *
+   */
+  checkFixedWidth: function () {
+
+    var LetterWidth,
+        lastLetterWidth;
+
+    var characters = 'abcdefghijklmnopqrstuvwxyz1234567890 !@#$%^&*()-=_+`~[]\;\',./{}|:"<>?';
+
+    LetterWidth = Editor.core.ctx.measureText(characters[0]).width;
+
+    for (var i = 1; i < characters.length; i++) {
+      lastLetterWidth = LetterWidth;
+      LetterWidth = Editor.core.ctx.measureText(characters[i]).width;
+
+      if (lastLetterWidth !== LetterWidth) {
+        Editor.font.fixedWidth = false;
+        return false;
+        break;
+      }
+
+    }
+    
+    Editor.font.fixedWidth = true;
+    Editor.font.width = LetterWidth;
+
+    return true;
+
+  },
+
+  measureText: function (text) {
+
+    if(Editor.font.fixedWidth){
+      return {width:text.length * Editor.font.width, height: Editor.font.height};
+    }
+    else{
+      return Editor.core.ctx.measureText(text);
     }
 
   }

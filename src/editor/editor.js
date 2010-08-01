@@ -20,7 +20,7 @@ Editor = {
     // There are atleast three rows of text, this is a bit more involved to create
     // the expected behavior
     if (text.length >= 3) {
-      
+
       // Loop through the rows of text to remove
       for (row = startRow; row <  startRow + text.length; row++) {
 
@@ -75,7 +75,7 @@ Editor = {
     Editor.removeRows(rowsToRemove[0], rowsToRemove.length);
 
     // Move the cursor to where it makes sense
-    Editor.cursor.moveTo(startCol, startRow);
+    // Editor.cursor.moveTo(startCol, startRow);
 
   },
 

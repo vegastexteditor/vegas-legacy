@@ -212,8 +212,8 @@ Editor.select = {
       
       }
 
-      x = Editor.core.ctx.measureText(textBeforeSelectStart).width + Editor.position.left;
-      w = Editor.core.ctx.measureText(selectedText).width;
+      x = Editor.core.measureText(textBeforeSelectStart).width + Editor.position.left;
+      w = Editor.core.measureText(selectedText).width;
 
       h = Editor.font.height;
       y = Editor.font.height * (row - Editor.scroll.charsFromtop) + Editor.position.top;
@@ -269,7 +269,7 @@ Editor.select = {
           // Select all characters AFTER the cursor end col
           textBeforeSelectStart = Editor.text[row].substr(0, endCol + 1);
           selectedText = Editor.text[row].substr(0, Editor.text[row].length  - textBeforeSelectStart.length);
-          x = Editor.core.ctx.measureText(textBeforeSelectStart).width + Editor.position.left;
+          x = Editor.core.measureText(textBeforeSelectStart).width + Editor.position.left;
           w = Editor.viewport.width - x;
 
         }
@@ -279,7 +279,7 @@ Editor.select = {
           // Select all characters BEFORE the cursor start col
           selectedText = Editor.text[row].substring(0, startCol + 1);
           x = Editor.position.left;
-          w = Editor.core.ctx.measureText(selectedText).width;
+          w = Editor.core.measureText(selectedText).width;
 
         }
 
@@ -331,7 +331,7 @@ Editor.select = {
           // Select all characters AFTER the cursor start col
           textBeforeSelectStart = Editor.text[row].substr(0, startCol + 1);
           selectedText = Editor.text[row].substring(startCol + 1, Editor.text[row].length);
-          x = Editor.core.ctx.measureText(textBeforeSelectStart).width + Editor.position.left;
+          x = Editor.core.measureText(textBeforeSelectStart).width + Editor.position.left;
           w = Editor.viewport.width - x;
 
         }
@@ -341,7 +341,7 @@ Editor.select = {
           // Select all characters AFTER the cursor start col
           selectedText = Editor.text[row].substring(0, endCol + 1);
           x = Editor.position.left;
-          w = Editor.core.ctx.measureText(selectedText).width;
+          w = Editor.core.measureText(selectedText).width;
         }
 
       h = Editor.font.height;

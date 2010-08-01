@@ -189,7 +189,7 @@ Editor.cursor = {
 
         // Find the left and right position the character
         leftOfLetter = rightOfLetter;
-        rightOfLetter += Editor.core.ctx.measureText(text[i]).width;
+        rightOfLetter += Editor.core.measureText(text[i]).width;
 
         // If X is inbetween these pixels we found the col
         if (x > leftOfLetter && x <= rightOfLetter) {
@@ -276,8 +276,9 @@ Editor.cursor = {
 
       // @todo: If left is passed in thats one less heavy calculation
       // (may have already been calculated)
+      // @todo, substring on nothing?
       var textToMeasure = Editor.text[Editor.cursor.row].substring(0, col + 1);
-      var textWidthBeforeCursor = Editor.core.ctx.measureText(textToMeasure).width;
+      var textWidthBeforeCursor = Editor.core.measureText(textToMeasure).width;
 
       Editor.cursor.pixelsLeft = textWidthBeforeCursor + Editor.position.left;
 
