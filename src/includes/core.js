@@ -28,6 +28,7 @@ Editor.init = function(){
     Editor.core.setupCanvas();
     Editor.viewport.setup();
     Editor.core.attachEvents();
+    Editor.highlighter.init();
     Editor.core.startPaint();
 
     return Editor;
@@ -104,8 +105,7 @@ Editor.core = {
   },
 
   stopPaint: function () {
-    var self = this;
-    window.clearInterval(self.paintId);
+    window.clearInterval(Editor.paintId);
   },
 
   paint: function () {
@@ -116,7 +116,13 @@ Editor.core = {
 
     Editor.cursor.paint();
 
-    Editor.core.paintText();
+    if (typeof(Editor.highlighter.highlightedText) !== 'undefined' && Editor.highlighter.highlightedText.length > 0) {
+      Editor.highlighter.paintHighlightedText();
+      //Editor.core.paintText();
+    }
+    else{
+      Editor.core.paintText();
+    }
 
     Editor.scroll.paintBars();
 
@@ -125,7 +131,7 @@ Editor.core = {
     Editor.command.paintCommandArea();
 
   },
-
+  
   paintText: function () {
 
     var ctx = Editor.core.ctx,
@@ -134,7 +140,6 @@ Editor.core = {
 
     ctx.fillStyle = "rgb(255, 255, 255)";
     ctx.font = Editor.font.style;
-    ctx.textBaseline = 'bottom';
 
     for (row =  Editor.scroll.charsFromtop; row < Editor.scroll.charsFromtop + Editor.core.viewableHeight; row++) {
 

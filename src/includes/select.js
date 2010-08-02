@@ -43,7 +43,7 @@ Editor.select = {
 
     if(typeof(Editor.select.draw) !== 'undefined'){
       for (var i = 0; i < Editor.select.draw.length; i++) {
-        Editor.core.ctx.fillStyle = "rgba(0, 157, 255, 1)";
+        Editor.core.ctx.fillStyle = "rgba(56,106,149, 1)";
         Editor.core.ctx.fillRect(
           Editor.select.draw[i][0],
           Editor.select.draw[i][1],

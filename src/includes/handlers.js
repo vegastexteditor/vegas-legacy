@@ -31,6 +31,8 @@ Editor.keyhandlers = {
       Editor.cursor.moveLeft();
     }
 
+    Editor.changedText();
+
     return false;
 
   },
@@ -80,6 +82,8 @@ Editor.keyhandlers = {
 
     }
 
+    Editor.changedText();
+
     return false;
 
   },
@@ -113,6 +117,8 @@ Editor.keyhandlers = {
     Editor.cursor.moveDown();
     
     Editor.cursor.moveHome();
+
+    Editor.changedText();
 
     return false;
   },
@@ -159,6 +165,7 @@ Editor.keyhandlers = {
 
   handleTab: function () {
     Editor.insertText('  ');
+    Editor.changedText();
   },
 
   handleInsertMode: function (){
@@ -171,10 +178,12 @@ Editor.keyhandlers = {
 
   handleCopy: function () {
     Editor.clipboard = Editor.select.selectedText;
+    Editor.changedText();
   },
 
   handlePaste: function () {
     Editor.insertText(Editor.clipboard);
+    Editor.changedText();
   }
   
 };

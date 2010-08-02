@@ -1,5 +1,9 @@
 Editor = {
 
+  changedText: function () {
+    jQuery(Editor.canvas).trigger('changeText');
+  },
+
   removeText: function (startRow, startCol, text) {
 
     var rowsToRemove = [],
@@ -77,6 +81,8 @@ Editor = {
     // Move the cursor to where it makes sense
     Editor.cursor.moveTo(startCol, startRow);
 
+    Editor.changedText();
+
   },
 
   /**
@@ -94,7 +100,7 @@ Editor = {
         cursorAtBeginningOfline;
 
       // Text is currently selected
-      if (Editor.select.selectedText.length > 0) {
+      if (Editor.select.selectedText && Editor.select.selectedText.length > 0) {
         Editor.select.removeSelection();
       }
       
@@ -184,6 +190,8 @@ Editor = {
 
     Editor.select.unselect();
 
+    Editor.changedText();
+
   },
 
 
@@ -218,6 +226,8 @@ Editor = {
     }
 
     Editor.text = deletionResult;
+
+    Editor.changedText();
 
   },
 
@@ -254,6 +264,8 @@ Editor = {
         Editor.text = text.split("\n");
       }
     });
+
+    Editor.changedText();
 
   },
 

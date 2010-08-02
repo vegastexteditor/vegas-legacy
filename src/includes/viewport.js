@@ -128,7 +128,7 @@ Editor.viewport = {
 
 
   paintBackground: function () {
-    Editor.core.ctx.fillStyle = "rgba(24, 44, 79, 1)";
+    Editor.core.ctx.fillStyle = "rgba(24, 44, 79)";
     Editor.core.ctx.fillRect(0, 0, Editor.width, Editor.height);
   }
 
