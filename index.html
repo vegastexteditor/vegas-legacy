@@ -1,66 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>ShitSpun</title>
-  <link rel="stylesheet" type="text/css" href="./editor.css" /><!-- JS -->
-  <script type="text/javascript" src="./src/library/jquery/jquery-1.4.2.js"></script>
-  <script type="text/javascript" src="./src/library/jqueryhotkeys/jquery.hotkeys.js"></script>
-
+  <title>Editor</title>
+  <link rel="stylesheet" type="text/css" href="./editor.css" />
   <script type="text/javascript" src="./src/editor.js"></script>
-  <script type="text/javascript" src="./src/settings.js"></script>
-  <script type="text/javascript" src="./src/includes/setup.js"></script>
-  <script type="text/javascript" src="./src/includes/cursor.js"></script>
-  <script type="text/javascript" src="./src/includes/select.js"></script>
-  <script type="text/javascript" src="./src/includes/command.js"></script>
-  <script type="text/javascript" src="./src/includes/viewport.js"></script>
-  <script type="text/javascript" src="./src/includes/handlers.js"></script>
-  <script type="text/javascript" src="./src/includes/keyMappings.js"></script>
-
-  <!-- Start Syntax Highlighting -->
-  <script type="text/javascript" src="./src/includes/highlighter.js" type="text/javascript"></script>
-  <script type="text/javascript" src="./src/library/codemirror/stringstream.js"></script>
-  <script type="text/javascript" src="./src/library/codemirror/tokenize.js"></script>
-  <script type="text/javascript" src="./src/library/codemirror/parsers/css/parsecss.js"></script>
-  <script type="text/javascript" src="./src/library/codemirror/parsers/xml/parsexml.js"></script>
-  <script type="text/javascript" src="./src/library/codemirror/parsers/javascript/tokenizejavascript.js"></script>
-  <script type="text/javascript" src="./src/library/codemirror/parsers/javascript/parsejavascript.js"></script>
-  <script type="text/javascript" src="./src/library/codemirror/parsers/htmlmixed/parsehtmlmixed.js"></script>
-  <!-- End Syntax Highlighting -->
-
-  <script type="text/javascript" src="./src/includes/core.js"></script>
-  
-  <script type='text/javascript'>
-
-    $(document).ready(function(){
-      Editor.init();
-      Editor.openFile('./alice.txt');
-    });
-
-  </script>
-
 </head>
 <body>
-  <div class="wrapper">
-    <canvas id='textarea'></canvas>
-  </div>
-  <div class="sidebar">
-    <ul>
-      <li>
-        <a href="#" onclick="Editor.openFile('./src/library/jquery/jquery-1.4.2.js');return false;">
-          Open jQuery
-        </a>
-      </li>
-      <li>
-        <a href="#" onclick="Editor.openFile('./src/includes/core.js');return false;">
-          Core
-        </a>
-      </li>
-      <li>
-        <a href="#" onclick="Editor.openFile('./alice.txt');return false;">
-          Open Alice In Wonder Land
-        </a>
-      </li>
-    </ul>
-  </div>
+  <canvas id='textarea'></canvas>
 </body>
 </html>
