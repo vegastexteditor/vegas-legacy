@@ -33,7 +33,14 @@
 
     $(document).ready(function(){
       Editor.init();
-      Editor.openFile('./alice.txt');
+      Editor.openFile();
+
+      var hackedTogether = function () {
+        Editor.highlighter.highlight();
+      };
+
+      setTimeout(hackedTogether,500);
+
     });
 
   </script>
