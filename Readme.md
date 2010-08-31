@@ -4,6 +4,11 @@ Vegas
   A configurable, extensable, text editor with a focus on usability and
   progressive efficiency.
 
+Status
+=====================
+* Completed Working prototype: http://bit.ly/vegasprototype (Chrome seems to work)
+* Building out skeleton of new architecture
+
 Authors
 =====================
 * Daniel Lopez <daniel.a.lopez@gmail.com>
