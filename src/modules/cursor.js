@@ -1,83 +1,83 @@
-(function() {
-  var global = (function() {return this;}).call(),
+(function () {
+  var global = (function () {return this;}).call(),
       vegas = global.vegas;
 
     /**
      * Text editor cursor
      */
-    vegas.Cursor = (function() {
+    vegas.Cursor = (function () {
 
-      var Cursor = function() {
-        vegas.makeObject(this, arguments);
+      var Cursor = function () {
+        vegas.utils.makeObject(this, arguments);
       };
 
       Cursor.prototype = {
 
-        draw: function(){
+        draw: function () {
 
         },
 
-        events: function(){
+        events: function () {
 
         },
 
-        getFromXy: function(){
+        getFromXy: function () {
 
         },
 
-        down: function(){
+        down: function () {
 
         },
 
-        up: function(){
+        up: function () {
 
         },
 
-        left: function(){
+        left: function () {
 
         },
 
-        right: function(){
+        right: function () {
 
         },
 
-        home: function(){
+        home: function () {
 
         },
 
-        end: function(){
+        end: function () {
 
         },
 
-        nextWord: function(){
+        nextWord: function () {
 
         },
 
-        prevWord: function(){
+        prevWord: function () {
 
         },
 
-        nextBlock: function(){
+        nextBlock: function () {
 
         },
 
-        prevBlock: function(){
+        prevBlock: function () {
 
         },
 
-        nextSmart: function(){
+        nextSmart: function () {
 
         },
 
-        prevSmart: function(){
+        prevSmart: function () {
 
         },
 
-        top: function(){
+        top: function () {
 
         },
 
-        bottom: function(){
+        bottom: function () {
 
         },
 

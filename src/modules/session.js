@@ -1,23 +1,49 @@
-(function() {
-  var global = (function(){return this;}).call(),
+(function () {
+  var global = (function () {return this;}).call(),
       vegas = global.vegas;
 
-    vegas.sessionState = {};
-
     /**
-     * An example of a multi-instance object structure
+     * A session contains all information in memory needed, views, buffers, etc.
      */
-    vegas.session = (function(){
+    vegas.session = (function () {
 
       var session = {
 
+        state: {}, // This is where all session information is stored
+
         init: function () {
-          vegas.sessionState = {
-            
-            /* Initiate fresh session */
-            started: true
-            
-          };
+          this.createFreshSession();
+        },
+
+        /**
+         * Creates an empty session consisting of bare bones structure:
+         *
+         * a view, which contains a pane, which contains a tab, which contains
+         * an editArea component.
+         *
+         */
+        createFreshSession: function () {
+
+          var editArea = new vegas.EditArea({
+
+          });
+
+          var tab = new vegas.Tab({
+            component: editArea
+          });
+
+          var pane = new vegas.Pane({
+            tabs: [tab]
+          });
+
+          var views = [new vegas.View({
+              existing: true,
+              context: vegas.view.getCurrentWindow(),
+              panes: pane,
+          })];
+
+          this.state = {views: views}
+
         },
 
         /**

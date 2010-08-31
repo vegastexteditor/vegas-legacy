@@ -1,13 +1,13 @@
-(function() {
-  var global = (function(){return this;}).call(),
+(function () {
+  var global = (function () {return this;}).call(),
       vegas = global.vegas;
 
     /**
      * A component where the cursor selection and text are visualized
      */
-    vegas.EditArea = (function(){
+    vegas.EditArea = (function () {
 
-      var EditArea = new Component('EditArea');
+      var EditArea = function () {};
 
       EditArea.prototype = {
 

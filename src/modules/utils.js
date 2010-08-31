@@ -1,16 +1,22 @@
-(function() {
-  var global = (function(){return this;}).call(),
+(function () {
+  var global = (function () {return this;}).call(),
       vegas = global.vegas;
 
     /**
      * Utility functions used throughout the program
      */
-    vegas.utils = (function() {
+    vegas.utils = (function () {
       
       var CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split(''),
           utils;
 
       utils = {
+        // Who knows may change up library
+        extend: global.jQuery.extend,
+
+        onResize: function (element, callback) {
+          global.jQuery(element).bind('resize', callback);
+        },
 
         /**
          *
@@ -22,12 +28,12 @@
          * @param {object} "arguments" variable from the original function
          *
          * @example
-         *  var objectSample = function() {
+         *  var objectSample = function () {
          *    vegas.makeObject(this, arguments);
          *  };
          *
          *  objectSample.prototype = {
-         *    init: function() { // Optional
+         *    init: function () { // Optional
          *    }
          *  };
          *
@@ -58,7 +64,7 @@
 
         },
 
-        getUniqueId: function() {
+        getUniqueId: function () {
          var chars = CHARS, uuid = new Array(36), rnd = 0, r;
 
           for (var i = 0; i < 36; i++) {

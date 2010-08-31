@@ -1,5 +1,5 @@
-(function() {
-  var global = (function(){return this;}).call(),
+(function () {
+  var global = (function () {return this;}).call(),
       vegas = global.vegas;
 
     /**
@@ -9,10 +9,10 @@
      * Scope ends up as a property on the resource object.
      *
      */
-    vegas.Scope = (function(){
+    vegas.Scope = (function () {
 
-      var Scope = function() {
-        vegas.makeObject(this, arguments);
+      var Scope = function () {
+        vegas.utils.makeObject(this, arguments);
       };
 
       Scope.prototype = {

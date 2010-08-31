@@ -1,11 +1,11 @@
-(function() {
-  var global = (function(){return this;}).call(),
+(function () {
+  var global = (function () {return this;}).call(),
       vegas = global.vegas;
 
     /**
      * An example of a multi-instance object structure
      */
-    vegas.objectSample1 = (function(){
+    vegas.objectSample1 = (function () {
 
       /*
        * Private methods
@@ -45,10 +45,10 @@
     /**
      * An example of a multi-instance object structure
      */
-    vegas.objectSample2 = (function(){
+    vegas.objectSample2 = (function () {
 
-      var objectSample2 = function() {
-        vegas.makeObject(this, arguments);
+      var objectSample2 = function () {
+        vegas.utils.makeObject(this, arguments);
       };
 
       /*

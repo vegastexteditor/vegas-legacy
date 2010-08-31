@@ -1,28 +1,28 @@
-(function() {
-  var global = (function(){return this;}).call(),
+(function () {
+  var global = (function () {return this;}).call(),
       vegas = global.vegas;
 
     /**
      * A group of Components inside of a single panes, can be visualized in (but
      * is not limited to) the traditional pane form.
      */
-    vegas.Pane = (function(){
+    vegas.Pane = (function (data) {
 
-      var Pane = function() {
-        vegas.makeObject(this, arguments);
+      var Pane = function () {
+        vegas.utils.makeObject(this, arguments);
       };
 
       Pane.prototype = {
 
-        init: function(type, buffers){
+        init: function (data) {
+          this.tabs = data.tabs || [];
+        },
+
+        remove: function () {
 
         },
 
-        remove: function(){
-
-        },
-
-        moveTo: function(position){
+        moveTo: function (position) {
 
         },
 
@@ -32,7 +32,7 @@
          * @return Object of Window
          *
          */
-        getWindow: function(){
+        getWindow: function () {
           return window;
         },
 

@@ -1,28 +1,28 @@
-(function() {
-  var global = (function(){return this;}).call(),
+(function () {
+  var global = (function () {return this;}).call(),
       vegas = global.vegas;
 
     /**
      * A group of Components inside of a single panes, can be visualized in (but
      * is not limited to) the traditional tab form.
      */
-    vegas.Tab = (function(){
+    vegas.Tab = (function () {
 
-      var Tab = function() {
-        vegas.makeObject(this, arguments);
+      var Tab = function (data) {
+        vegas.utils.makeObject(this, arguments);
       };
 
       Tab.prototype = {
 
-        init: function () {
-
+        init: function (data) {
+          this.component = data.component || null;
         },
         
-        remove: function(){
+        remove: function () {
 
         },
 
-        moveTo: function(pane){
+        moveTo: function (pane) {
 
         },
 
@@ -32,7 +32,7 @@
          * @return Object of Window
          *
          */
-        getWindow: function(){
+        getWindow: function () {
 
         },
 
@@ -42,7 +42,7 @@
          * @return Object of Pane
          *
          */
-        getPane: function(){
+        getPane: function () {
 
         },
 

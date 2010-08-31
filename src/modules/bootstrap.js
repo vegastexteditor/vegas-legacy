@@ -1,5 +1,5 @@
-(function() {
-  var global = (function(){return this;}).call(),
+(function () {
+  var global = (function () {return this;}).call(),
       vegas = global.vegas,
       load = vegas.module.load,
       bootstrap;
@@ -9,6 +9,11 @@
    */
 
   bootstrap = [
+    
+    // Settings
+    'settings/settings.js',
+
+    'library/jquery/jquery-1.4.2.js',
 
     // Main application modules
     'modules/utils.js',
@@ -35,6 +40,7 @@
     'modules/file.js',
     'modules/command.js',
 
+    'modules/session.js',
     'modules/init.js'
   ];
 

@@ -1,5 +1,5 @@
-(function() {
-  var global = (function(){return this;}).call(),
+(function () {
+  var global = (function () {return this;}).call(),
       vegas = global.vegas;
 
   /*
@@ -8,11 +8,11 @@
    * when the editor is in insert mode.
    *
    */
-  vegas.Buffer = (function() {
+  vegas.Buffer = (function () {
 
-    var Buffer = function() {
+    var Buffer = function () {
       this.id = vegas.getUniqueId();
-      vegas.makeObject(this, arguments);
+      vegas.utils.makeObject(this, arguments);
     };
 
     Buffer.prototype = {
@@ -28,7 +28,7 @@
        *  Removes buffer from memory (Unsafe: does not save changes)
        *  @returns True on success, false on failure.
        */
-      destroy: function(buffer_id) {
+      destroy: function (buffer_id) {
         return false;
       },
 
@@ -39,13 +39,13 @@
         this.resource = resource;
       },
 
-      activate: function() {
+      activate: function () {
         for (var i = 0; i < this._onActivate.length; i++) {
           vegas.buffers._onActivate[i](this);
         }
       },
 
-      onActivate: function(callback) {
+      onActivate: function (callback) {
         vegas.buffers._onActivate.push(callback);
       },
 
@@ -71,16 +71,16 @@
     /**
      * A list of buffers from the specified context
      */
-    list: function(context) {
+    list: function (context) {
       context = context || 'global';
       return bufferList;
     },
 
-    onActivate: function(callback) {
+    onActivate: function (callback) {
       vegas.buffers._onActivate.push(callback);
     },
 
-    seek: function(key, context) {
+    seek: function (key, context) {
       context = context || 'global';
 
       return bufferList;
