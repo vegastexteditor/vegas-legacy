@@ -12,7 +12,7 @@
         state: {}, // This is where all session information is stored
 
         init: function () {
-          this.createFreshSession();
+          this.createSampleSession1();
         },
 
         /**
@@ -39,11 +39,66 @@
           var views = [new vegas.View({
               existing: true,
               context: vegas.view.getCurrentWindow(),
-              panes: pane,
+              panes: [pane],
           })];
 
           this.state = {views: views}
 
+        },
+
+        createSampleSession1: function () {
+          var editArea = new vegas.EditArea({
+
+          });
+
+          var tab1 = new vegas.Tab({
+            component: editArea
+          });
+
+          var tab2 = new vegas.Tab({
+            component: editArea
+          });
+
+          var pane3 = new vegas.Pane({
+            type: 'horizontal',
+            tabs: [tab1],
+            height: '50%'
+          });
+
+          var pane4 = new vegas.Pane({
+            type: 'horizontal',
+            tabs: [tab2],
+            height: '50%'
+          });
+
+          var pane1 = new vegas.Pane({
+            type: 'vertical',
+            panes: [pane3, pane4],
+            width: '25%'
+          });
+
+          var pane2 = new vegas.Pane({
+            type: 'vertical',
+            tabs: [tab1, tab2],
+            width: '25%'
+          });
+
+          var pane3 = new vegas.Pane({
+            type: 'vertical',
+            tabs: [tab1, tab2],
+            width: '50%'
+          });
+
+          var views = [new vegas.View({
+            existing: true,
+            context: vegas.view.getCurrentWindow(),
+            panes: [pane1, pane2, pane3],
+          })];
+
+          this.state = {
+            activeView: views[0],
+            views: views
+          }
         },
 
         /**

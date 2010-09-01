@@ -42,6 +42,7 @@
 
           // Apply necessary styles to the canvas
           this.canvas = this.context.document.getElementsByTagName('canvas')[0];
+          this.ctx = this.canvas.getContext('2d');
 
           // For now just removes the scrollbar
           this.canvas.style.position = 'fixed';
@@ -50,7 +51,7 @@
           this.canvas.style.backgroundColor = vegas.settings.backgroundColor;
 
           // Stretch the canvas across the body
-          vegas.view.setCanvasDimensions(this);
+          vegas.view.setDimensions(this);
 
         },
 
@@ -95,7 +96,7 @@
           
           vegas.utils.onResize(window, function (e) {
             view = self.getViewFromWindow(window); // @TODO: this doesn't need to be ran all the time.
-            self.setCanvasDimensions(view);
+            self.setDimensions(view);
           });
 
         },
@@ -116,9 +117,15 @@
         /**
          * Stretches the canvas to take up the entire window.
          */
-        setCanvasDimensions: function (view) {
-          view.canvas.width = this.getViewWidth();
-          view.canvas.height = this.getViewHeight();
+        setDimensions: function (view) {
+          var width = this.getViewWidth(),
+              height = this.getViewHeight();
+
+          view.width = width;
+          view.height = height;
+          view.canvas.width = width;
+          view.canvas.height = height;
+
         },
 
         /**

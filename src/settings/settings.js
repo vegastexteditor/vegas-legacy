@@ -3,6 +3,7 @@
 
   global.vegas.settings = {
     backgroundColor: '#bebebe',
+    masterPaintInterval: 500,
   };
 
 }());

@@ -1,11 +1,11 @@
 (function() {
-  var global = (function(){return this;}).call(),
+  var global = (function() {return this;}).call(),
       vegas = global.vegas;
 
     /**
      * The primary interface to display
      */
-    vegas.paint = (function(){
+    vegas.paint = (function() {
 
       var paint = {
 
@@ -13,6 +13,39 @@
 
         init: function () {
           this.painters = [];
+        },
+
+
+        // The main painter function, everything that is going to be painted
+        // is here.
+        paint: function (view) {
+
+          vegas.pane.paint(view);
+
+        },
+
+        // Called in vegas.init();
+        startPaint: function (view) {
+
+          var self = this,
+              interval = vegas.settings.masterPaintInterval;
+
+          view = view || vegas.session.state.activeView;
+
+          self.paint(view);
+
+          view.paintId = global.setInterval(function () {
+            self.paint(view);
+          }, interval);
+
+        },
+
+        stopPaint: function (view) {
+
+          view = view || vegas.session.state.activeView;
+
+          global.clearInterval(view.paintId);
+
         },
 
         registerPainter: function (object) {
@@ -34,6 +67,8 @@
         ]
 
       };
+
+      paint.init();
 
       return paint;
 
