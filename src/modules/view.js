@@ -1,7 +1,8 @@
 (function () {
   var global = (function () {return this;}).call(),
       vegas = global.vegas,
-      session = vegas.session;
+      session = vegas.session,
+      utils = vegas.utils;
 
     /**
      * A base container for visualization, also known as "windows" can contain Pane(s)
@@ -14,14 +15,15 @@
     vegas.View = (function (data) {
 
       var View = function () {
-        vegas.utils.makeObject(this, arguments);
+        utils.makeObject(this, arguments, 'View');
+        this.entity = 'View';
       };
 
       View.prototype = {
 
         init: function (data) {
           // Take in properties passed in to data object.
-          vegas.utils.extend(this, data);
+          utils.extend(this, data);
           this.setupWindow();
           this.setupViewPort();
         },
@@ -29,7 +31,7 @@
         setupWindow: function () {
           // Assign a unique Id to the window so we can do easy comparison of
           // windows, especially for finding the View object of a window object.
-          this.context.name = vegas.utils.getUniqueId();
+          this.context.name = utils.getUniqueId();
         },
 
         setupViewPort: function () {
@@ -51,7 +53,7 @@
           this.canvas.style.backgroundColor = vegas.settings.backgroundColor;
 
           // Stretch the canvas across the body
-          vegas.view.setDimensions(this);
+          vegas.view.setArea(this);
 
         },
 
@@ -94,9 +96,12 @@
           var self = this;
           var window = self.getCurrentWindow();
           
-          vegas.utils.onResize(window, function (e) {
+          utils.onResize(window, function (e) {
             view = self.getViewFromWindow(window); // @TODO: this doesn't need to be ran all the time.
-            self.setDimensions(view);
+            self.setArea(view);
+            vegas.pane.setPaneListInfo();
+            vegas.paint.paint();
+
           });
 
         },
@@ -117,29 +122,43 @@
         /**
          * Stretches the canvas to take up the entire window.
          */
-        setDimensions: function (view) {
-          var width = this.getViewWidth(),
-              height = this.getViewHeight();
+        setArea: function (view) {
+          var width = this.getViewWidth(view),
+              height = this.getViewHeight(view),
+              offset = this.getOffset(view);
 
           view.width = width;
           view.height = height;
           view.canvas.width = width;
           view.canvas.height = height;
+          view.offset = offset;
 
         },
 
         /**
          * Get the inner width of the window.
          */
-        getViewWidth: function () {
-          return global.innerWidth;
+        getViewWidth: function (view) {
+          return view.context.window.innerWidth;
         },
 
         /**
          * Get the inner height of the window.
          */
-        getViewHeight: function () {
-          return global.innerHeight;
+        getViewHeight: function (view) {
+          return view.context.window.innerHeight;
+        },
+
+        getOffset: function (view) {
+
+          var offset = vegas.utils.offset(view.canvas);
+
+          offsetXy = {
+            x: offset.left,
+            y: offset.top
+          };
+
+          return offsetXy;
         },
 
         /**

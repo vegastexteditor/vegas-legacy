@@ -12,41 +12,76 @@
         state: {}, // This is where all session information is stored
 
         init: function () {
-          this.createSampleSession1();
+          this.createComplexSession();
         },
+
+        createSession: function () {
+
+            var editArea = new vegas.EditArea({
+            });
+
+            var editAreaTab = new vegas.Tab({
+              component: editArea
+            });
+
+            var editorPane = new vegas.Pane({
+              tabs:[editAreaTab],
+              name: 'Editor Pane'
+            });
+
+            var basePane = new vegas.Pane({
+              type: 'horizontal',
+              height: 45,
+              flipStretching: true, // height is attributed to the second item in the array (the parent stretches).
+              noHandle: true,
+              panes:[editorPane, editorPane],
+              name: 'basePane'
+            });
+
+            var views = [new vegas.View({
+              primary: true,
+              context: vegas.view.getCurrentWindow(),
+              paneTree: basePane
+            })];
+
+            this.state = {
+              activeView: views[0],
+              activePane: editorPane,
+              views: views
+            }
+        },
+
 
         /**
-         * Creates an empty session consisting of bare bones structure:
          *
-         * a view, which contains a pane, which contains a tab, which contains
-         * an editArea component.
+         * createComplexSession:
+         * __________________________________________________________________
+         * |             |                        |            |             |
+         * |             |           C            |            |             |
+         * |             |                        |            |     L       |
+         * |             |________________________|            |             |
+         * |             |       |   E    |   |   |            |_____________|
+         * |      A      |       |________|   |   |            |      |      |
+         * |             |       |   F    |   |   |            |      |      |
+         * |             |       |________|   |   |            |      |      |
+         * |             |       |        |   |   |            |      |      |
+         * |_____________|       |        |   |   |            |      |      |
+         * |             |       |   G    |   |   |     K      |      |      |
+         * |             |   D   |        | I | J |            |      |      |
+         * |             |       |        |   |   |            |   M  |  N   |
+         * |             |       |________|   |   |            |      |      |
+         * |             |       |        |   |   |            |      |      |
+         * |      B      |       |        |   |   |            |      |      |
+         * |             |       |        |   |   |            |      |      |
+         * |             |       |   H    |   |   |            |      |      |
+         * |             |       |        |   |   |            |      |      |
+         * |             |       |        |   |   |            |      |      |
+         * |             |       |        |   |   |            |      |      |
+         * |_____________|_______|________|___|___|____________|______|______|
          *
          */
-        createFreshSession: function () {
+        createComplexSession: function () {
 
-          var editArea = new vegas.EditArea({
-
-          });
-
-          var tab = new vegas.Tab({
-            component: editArea
-          });
-
-          var pane = new vegas.Pane({
-            tabs: [tab]
-          });
-
-          var views = [new vegas.View({
-              existing: true,
-              context: vegas.view.getCurrentWindow(),
-              panes: [pane],
-          })];
-
-          this.state = {views: views}
-
-        },
-
-        createSampleSession1: function () {
           var editArea = new vegas.EditArea({
 
           });
@@ -59,40 +94,144 @@
             component: editArea
           });
 
-          var pane3 = new vegas.Pane({
+          var topMiddlePane = new vegas.Pane({
+            tabs:[tab1, tab2],
+            name: 'topMiddlePane'
+          });
+
+          var middleBottomLeftPane = new vegas.Pane({
+            tabs:[tab1, tab2],
+            name: 'middleBottomLeftPane'
+          });
+
+          var middleBottomRightLeftTopPane = new vegas.Pane({
+            tabs:[tab1, tab2],
+            name: 'middleBottomRightLeftTopPane'
+          });
+
+          var middleBottomRightLeftBottomPane = new vegas.Pane({
+            tabs:[tab1, tab2],
+            name: 'middleBottomRightLeftBottomPane'
+          });
+
+          var middleBottomRightLeftPane = new vegas.Pane({
             type: 'horizontal',
-            tabs: [tab1],
-            height: '50%'
+            height: 125,
+            panes:[middleBottomRightLeftTopPane, middleBottomRightLeftBottomPane],
+            name: 'middleBottomRightLeftPane'
           });
 
-          var pane4 = new vegas.Pane({
+          var middleBottomRightRightLeftPane = new vegas.Pane({
+            tabs:[tab1, tab2],
+            name: 'middleBottomRightRightLeftPane'
+          });
+
+          var middleBottomRightRightRightPane = new vegas.Pane({
+            tabs:[tab1, tab2],
+            name: 'middleBottomRightRightRightPane'
+          });
+
+          var middleBottomRightRightPane = new vegas.Pane({
+            type: 'vertical',
+            width: 85,
+            panes:[middleBottomRightRightLeftPane, middleBottomRightRightRightPane],
+            name: 'middleBottomRightRightPane'
+          });
+
+          var middleBottomRightPane = new vegas.Pane({
+            type: 'vertical',
+            width: 150,
+            panes:[middleBottomRightLeftPane, middleBottomRightRightPane],
+            name: 'middleBottomRightPane'
+          });
+
+          var middleBottomPane = new vegas.Pane({
+            type: 'vertical',
+            width: 150,
+            panes:[middleBottomLeftPane, middleBottomRightPane],
+            name: 'middleBottomPane'
+          });
+
+          var middlePane = new vegas.Pane({
             type: 'horizontal',
-            tabs: [tab2],
-            height: '50%'
+            height: 150,
+            panes:[topMiddlePane, middleBottomPane],
+            name: 'middlePane'
           });
 
-          var pane1 = new vegas.Pane({
-            type: 'vertical',
-            panes: [pane3, pane4],
-            width: '25%'
+          var rightRightLeft = new vegas.Pane({
+            tabs:[tab1, tab2],
+            name: 'rightRightLeft'
           });
 
-          var pane2 = new vegas.Pane({
-            type: 'vertical',
-            tabs: [tab1, tab2],
-            width: '25%'
+          var rightRightRightTop = new vegas.Pane({
+            tabs:[tab1, tab2],
+            name: 'rightRightRightTop'
           });
 
-          var pane3 = new vegas.Pane({
-            type: 'vertical',
-            tabs: [tab1, tab2],
-            width: '50%'
+          var rightRightRightBottom = new vegas.Pane({
+            tabs:[tab1, tab2],
+            name: 'rightRightRightBottom'
           });
+
+          var rightRightRight = new vegas.Pane({
+            type: 'horizontal',
+            height: 185,
+            panes:[rightRightRightTop, rightRightRightBottom],
+            name: 'rightRightRight'
+          });
+
+          var rightRightPane = new vegas.Pane({
+            type: 'vertical',
+            width: 275,
+            panes:[rightRightLeft, rightRightRight],
+            name: 'rightRightPane'
+          });
+
+          var rightPane = new vegas.Pane({
+            type: 'vertical',
+            width: 500,
+            panes:[middlePane, rightRightPane],
+            name: 'rightPane'
+          });
+
+          var topLeftPane = new vegas.Pane({
+            tabs:[tab1, tab2],
+            name: 'topLeftPane'
+          });
+
+          var bottomLeftPane = new vegas.Pane({
+            tabs:[tab1, tab2],
+            name: 'bottomLeftPane'
+          });
+
+          var leftPane = new vegas.Pane({
+            type: 'horizontal',
+            height: 250,
+            panes:[topLeftPane, bottomLeftPane],
+            name: 'leftPane'
+          });
+
+          var mainPane = new vegas.Pane({
+            type: 'vertical',
+            width: 250,
+            panes:[leftPane, rightPane],
+            name: 'mainPane'
+          });
+
+          var basePane = new vegas.Pane({
+            type: 'horizontal',
+            height: 200,
+            panes:[mainPane, editArea],
+            name: 'basePane'
+          });
+
+          basePane = mainPane;
 
           var views = [new vegas.View({
-            existing: true,
+            primary: true,
             context: vegas.view.getCurrentWindow(),
-            panes: [pane1, pane2, pane3],
+            paneTree: basePane
           })];
 
           this.state = {
@@ -199,5 +338,3 @@
   };
 
  */
-
-

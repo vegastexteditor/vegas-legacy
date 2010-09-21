@@ -100,10 +100,16 @@ Application Concepts
      A base container for visualization, also known as "windows" can contain Pane(s)
 
   - **Panes:**
-     A container for Tabs. When there is only one pane, a pane takes up the
-     entire window. Panes can be singular or can come in sets of two. When in
-     sets of two a pane may be vertical or horizontal. Which allows for a
-    "split view" of the editors Components
+     A pane is basically a rectangle that takes up some layout of the editor.
+		 Examples of panes are Panes, toolbars, command bars. These entities
+		 are not overlayed over anything. They take up the editor visual area.
+
+  - **Panes:**
+     Panes are a type of pane that may be resized through the user interface,
+		 and contain Tabs. When there is only one pane, a pane takes up the entire
+		 window. Panes can be one or many. When in there multiple panes, a pane may
+		 be vertical or horizontal. Which allows for a "split view" of the editors
+		 Components
 
   - **Components (cpnt):**
      Visual representations of data in panes, i.e. editArea, fileExplorer, hintViewer

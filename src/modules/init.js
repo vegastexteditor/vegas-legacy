@@ -10,6 +10,7 @@
 
       var init = function () {
         vegas.paint.startPaint();
+        vegas.utils.triggerReady();
       };
 
       init();

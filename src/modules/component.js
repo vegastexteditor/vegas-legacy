@@ -18,18 +18,16 @@
      *   }
      *
      */
-    Component = (function(){
+    vegas.Component = (function(){
 
       vegas.components = [];
 
       var Component = function(){
         vegas.utils.makeObject(this, arguments);
+        this.entity = 'Component';
       };
 
       Component.prototype = {
-
-        width: null,
-        height: null,
 
         init: function (componentName) {
           this.id = vegas.utils.getUniqueId();
