@@ -15,7 +15,7 @@
   };
 
   settings.debug = {
-    panes: true,
+    panes: false,
   };
 
   vegas.settings = settings

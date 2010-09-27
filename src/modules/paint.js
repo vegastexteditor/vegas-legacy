@@ -15,12 +15,19 @@
           this.painters = [];
         },
 
-
         // The main painter function, everything that is going to be painted
         // is here.
         paint: function (view) {
 
+          view = view || vegas.session.state.activeView;
+
+          // normal global paint settings
+          view.ctx.textBaseline = 'bottom';
+          view.ctx.lineWidth = '1';
+
+          // Module paint functions
           vegas.pane.paint(view);
+          vegas.command.paint(view);
 
         },
 
@@ -37,6 +44,8 @@
           view.paintId = global.setInterval(function () {
             self.paint(view);
           }, interval);
+
+          self.stopPaint();
 
         },
 

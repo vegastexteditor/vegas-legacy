@@ -12,6 +12,8 @@
     
     // Settings
     'settings/settings.js',
+    'settings/keyMappings.js',
+    'settings/keyboard.js',
 
     'library/jquery/jquery-1.4.2.js',
 
@@ -23,7 +25,6 @@
     'modules/view.js',
     'modules/pane.js',
     'modules/tab.js',
-
     'modules/component.js',
 
     // Editor specific modules
@@ -33,12 +34,13 @@
     'modules/scope.js',
     'modules/resource.js',
     'modules/actions.js',
-    'modules/keymap.js',
     'modules/editArea.js',
 
     // High level modules
     'modules/file.js',
     'modules/command.js',
+    'modules/keymap.js',
+    'modules/keyHandler.js',
 
     'modules/session.js',
     'modules/init.js'
