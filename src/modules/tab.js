@@ -10,6 +10,7 @@
 
       var Tab = function (data) {
         vegas.utils.makeObject(this, arguments);
+        this.entity = 'Tab';
       };
 
       Tab.prototype = {

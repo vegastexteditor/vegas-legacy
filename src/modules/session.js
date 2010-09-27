@@ -12,93 +12,49 @@
         state: {}, // This is where all session information is stored
 
         init: function () {
-          this.createSampleSession1();
+          this.createSession();
         },
 
-        /**
-         * Creates an empty session consisting of bare bones structure:
-         *
-         * a view, which contains a pane, which contains a tab, which contains
-         * an editArea component.
-         *
-         */
-        createFreshSession: function () {
+        createSession: function () {
 
-          var editArea = new vegas.EditArea({
+            var editArea = new vegas.EditArea({
+            });
 
-          });
+            var editAreaTab = new vegas.Tab({
+              component: editArea
+            });
 
-          var tab = new vegas.Tab({
-            component: editArea
-          });
+            var editorPane = new vegas.Pane({
+              tabs:[editAreaTab],
+              name: 'Editor Pane'
+            });
 
-          var pane = new vegas.Pane({
-            tabs: [tab]
-          });
+            var commandBar = new vegas.Pane({
+              name: 'CommandBar'
+            });
 
-          var views = [new vegas.View({
-              existing: true,
+            commandBar = new vegas.CommandBar(commandBar);
+
+            var basePane = new vegas.Pane({
+              type: 'horizontal',
+              height: 45,
+              flipStretching: true, // height is attributed to the second item in the array (the parent stretches).
+              noHandle: true,
+              panes:[editorPane, commandBar],
+              name: 'basePane'
+            });
+
+            var views = [new vegas.View({
+              primary: true,
               context: vegas.view.getCurrentWindow(),
-              panes: [pane],
-          })];
+              paneTree: basePane
+            })];
 
-          this.state = {views: views}
-
-        },
-
-        createSampleSession1: function () {
-          var editArea = new vegas.EditArea({
-
-          });
-
-          var tab1 = new vegas.Tab({
-            component: editArea
-          });
-
-          var tab2 = new vegas.Tab({
-            component: editArea
-          });
-
-          var pane3 = new vegas.Pane({
-            type: 'horizontal',
-            tabs: [tab1],
-            height: '50%'
-          });
-
-          var pane4 = new vegas.Pane({
-            type: 'horizontal',
-            tabs: [tab2],
-            height: '50%'
-          });
-
-          var pane1 = new vegas.Pane({
-            type: 'vertical',
-            panes: [pane3, pane4],
-            width: '25%'
-          });
-
-          var pane2 = new vegas.Pane({
-            type: 'vertical',
-            tabs: [tab1, tab2],
-            width: '25%'
-          });
-
-          var pane3 = new vegas.Pane({
-            type: 'vertical',
-            tabs: [tab1, tab2],
-            width: '50%'
-          });
-
-          var views = [new vegas.View({
-            existing: true,
-            context: vegas.view.getCurrentWindow(),
-            panes: [pane1, pane2, pane3],
-          })];
-
-          this.state = {
-            activeView: views[0],
-            views: views
-          }
+            this.state = {
+              activeView: views[0],
+              activePane: editorPane,
+              views: views
+            }
         },
 
         /**
@@ -199,5 +155,3 @@
   };
 
  */
-
-

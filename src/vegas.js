@@ -20,7 +20,7 @@
  *
  */
 (function() {
-  
+
   var global = (function(){return this;}).call();
 
   global.vegas = {};
@@ -30,6 +30,13 @@
       bootstrap = ['modules/bootstrap.js'],
 
       thisFileName = 'vegas.js';
+
+  
+  if(typeof(window.console) === 'undefined') {
+    window.console = {}
+    console.log = console.error = console.info = console.debug = console.warn = console.trace = console.dir = console.dirxml = console.group = console.groupEnd = console.time = console.timeEnd = console.assert = console.profile = function() {};
+  }
+
   /**
    * A hacked together simple module loader
    */
@@ -59,7 +66,7 @@
       loadQueue: [],
 
       register: function(name){
-        console.info('loaded: ', name);
+        // console.info('loaded: ', name);
       },
 
       isLoaded: function (src) {
@@ -86,7 +93,7 @@
 
       loadJs: function (src) {
 
-        console.info('loading: ' + src);
+        // console.info('loading: ' + src);
 
         var self = this,
             head = document.getElementsByTagName('head')[0],
@@ -94,6 +101,10 @@
 
         if (src.indexOf('http://') == -1) {
           src = APP_ROOT + src;
+        }
+
+        if (true) { // @todo:dal dev setting only
+          src += '?t=' + new Date().getTime();
         }
 
         this.loadingModules = true;
