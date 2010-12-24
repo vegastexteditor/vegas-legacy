@@ -1,9 +1,11 @@
 (function() {
   var global = (function(){return this;}).call(),
-      vegas = global.vegas;
+      vegas = global.vegas,
+      session = vegas.session;
 
     /**
-     * Basic file actions, think of this as a typical file menu list, should
+     * @namespace vegas.file
+     * @description Basic file actions, think of this as a typical file menu list, should
      * remain fairly high level.
      */
     vegas.file = (function(){
@@ -13,12 +15,13 @@
        */
       var _save = function (buffer) {
         buffer = buffer || session.activeBuffer;
-        return buffer.save();
+        return true;
       };
 
       var file = {
-
+        /** @lends vegas.file */
         'new': function () {
+          console.log('new');
           var resource = null;
           var buffer = new vegas.Buffer(resource);
           var editArea = new vegas.EditArea(buffer);
@@ -28,6 +31,7 @@
         newFile: function(){this['new'].apply(this, arguments)},
 
         open: function (resourceLocation) {
+          console.log('open');
           var resource = new vegas.Resource(resourceLocation);
           var buffer = new vegas.Buffer(resource);
           var editArea = new vegas.EditArea(buffer);
@@ -40,6 +44,7 @@
         },
 
         save: function () {
+          console.log('save');
           if (_save()){
             vegas.status.displayMessage('File has been saved.');
           }
@@ -49,6 +54,7 @@
         },
 
         saveAs: function (resourceLocation, buffer) {
+          console.log('saveAs');
 
           if (typeof(resourceLocation) !== 'string') {
             console.error('bad param: resourceLocation');
@@ -63,6 +69,7 @@
         },
 
         saveAll: function () {
+          console.log('saveAll');
           var unsavedBuffers = buffers.getUnsavedBuffers(),
               buffer,
               buffersSaved = [],

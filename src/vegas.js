@@ -19,21 +19,18 @@
  * @section DESCRIPTION
  *
  */
-(function() {
-
-  var global = (function(){return this;}).call();
+(function(global) {
 
   global.vegas = {};
+  global.vegas.ns = 'vegas'; // the global namespace
 
   var vegas = global.vegas,
 
       bootstrap = ['modules/bootstrap.js'],
-
       thisFileName = 'vegas.js';
 
-  
   if(typeof(window.console) === 'undefined') {
-    window.console = {}
+    window.console = {};
     console.log = console.error = console.info = console.debug = console.warn = console.trace = console.dir = console.dirxml = console.group = console.groupEnd = console.time = console.timeEnd = console.assert = console.profile = function() {};
   }
 
@@ -47,7 +44,7 @@
         src,
         result,
         found;
-
+    // Go through all the scripts in the document, and find this script file (vegas.js)
     for (var i = 0; i < scripts.length; i++) {
       src = scripts[i].src;
       result = src.substring(src.length * 1,(src.length * 1) - targetName.length);
@@ -56,8 +53,10 @@
       }
     }
 
+    // From the current script file we can determine the application root.
     var APP_ROOT = found.split(targetName)[0];
 
+    // Internal methods for loading and registration methods and related properties
     var module = {
 
       loadingModules: false,
@@ -66,7 +65,7 @@
       loadQueue: [],
 
       register: function(name){
-        // console.info('loaded: ', name);
+        console.info('loaded: ', name);
       },
 
       isLoaded: function (src) {
@@ -143,6 +142,7 @@
 
     };
 
+    // Provide publicly accessable methods and properties.
     var returnObject = {
       load: function (src, async) {
         module.load.call(module, src, async);
@@ -154,9 +154,10 @@
     return returnObject;
 
   }());
-  
+
+  // Go through the bootstrap (bootstrap.js) and load the modules.
   for (var i = 0; i < bootstrap.length; i++) {
     vegas.module.load(bootstrap[i]);
   }
 
-})();
+})(this);

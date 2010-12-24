@@ -3,12 +3,13 @@
       vegas = global.vegas;
 
     /**
+     * @namespace vegas.paint
      * The primary interface to display
      */
     vegas.paint = (function() {
 
       var paint = {
-
+        /** @lends vegas.paint */
         painters: [],
 
         init: function () {
@@ -26,7 +27,7 @@
           view.ctx.lineWidth = '1';
 
           // Module paint functions
-          vegas.pane.paint(view);
+          vegas.region.paint(view);
           vegas.command.paint(view);
 
         },
@@ -35,7 +36,7 @@
         startPaint: function (view) {
 
           var self = this,
-              interval = vegas.settings.masterPaintInterval;
+              interval = vegas.options.application.masterPaintInterval;
 
           view = view || vegas.session.state.activeView;
 
@@ -77,7 +78,7 @@
 
       };
 
-      paint.init();
+      vegas.init.register(paint);
 
       return paint;
 

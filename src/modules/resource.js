@@ -3,8 +3,10 @@
       vegas = global.vegas;
 
     /**
-     * References to location for text storage (a reference to a file on disk)
-     * The resource is a propery on a Buffer Instance
+     * @class Resource
+     * @memberOf vegas
+     * @description References to location for text storage (a reference to a
+     * file on disk) The resource is a propery on a Buffer Instance
      */
     vegas.Resource = (function () {
 
@@ -13,7 +15,7 @@
       };
 
       Resource.prototype = {
-
+        /** @lends vegas.Resource */
         init: function () {
 
         },

@@ -1,94 +1,142 @@
 (function () {
   var global = (function () {return this;}).call(),
-      vegas = global.vegas;
+      vegas = global.vegas,
+      utils = vegas.utils;
 
-    /**
-     * Text editor cursor
-     */
-    vegas.Cursor = (function () {
+  /**
+   * @class Cursor
+   * @memberOf vegas
+   * @description Text editor cursor
+   * @param Buffer an instance of the Buffer object
+   * @param options an object containing
+   */
+  vegas.Cursor = function (region, options) {
+    vegas.utils.makeObject(this, arguments);
+  };
 
-      var Cursor = function () {
-        vegas.utils.makeObject(this, arguments);
-      };
+  /** @lends vegas.Cursor */
+  vegas.Cursor.prototype = {
 
-      Cursor.prototype = {
+    init: function (region, options) {
 
-        draw: function () {
+      this.row = 0;
+      this.col = 0;
+      this.region = region;
 
-        },
+    },
 
-        events: function () {
+    paint: function (view) {
 
-        },
+      view = view || vegas.session.state.activeView;
 
-        getFromXy: function () {
+      var ctx = view.ctx,
+          row = this.row,
+          posTop,
+          region = this.region,
+          options = region.options,
+          fontHeight = options.font.size,
+          textPoint = region.getTextPoint();
 
-        },
+      ctx.fillStyle = options.cursor.color;
 
-        down: function () {
+      posTop = (fontHeight * (row - region.scrollbar.charsFromtop + 1)) + textPoint.y;
 
-        },
+      ctx.fillRect(
+        textPoint.x,
+        posTop,
+        options.cursor.width,
+        options.cursor.height
+      );
 
-        up: function () {
+    },
 
-        },
+    events: function () {
 
-        left: function () {
+    },
 
-        },
+    getFromXy: function () {
 
-        right: function () {
+    },
 
-        },
+    down: function () {
 
-        home: function () {
+    },
 
-        },
+    up: function () {
 
-        end: function () {
+    },
 
-        },
+    left: function () {
 
-        nextWord: function () {
+    },
 
-        },
+    right: function () {
 
-        prevWord: function () {
+    },
 
-        },
+    home: function () {
 
-        nextBlock: function () {
+    },
 
-        },
+    end: function () {
 
-        prevBlock: function () {
+    },
 
-        },
+    nextWord: function () {
 
-        nextSmart: function () {
+    },
 
-        },
+    prevWord: function () {
 
-        prevSmart: function () {
+    },
 
-        },
+    nextBlock: function () {
 
-        top: function () {
+    },
 
-        },
+    prevBlock: function () {
 
-        bottom: function () {
+    },
 
-        },
+    nextSmart: function () {
 
-        api: [
-        ]
+    },
 
-      };
+    prevSmart: function () {
 
-      return Cursor;
+    },
 
-    }());
+    top: function () {
+
+    },
+
+    bottom: function () {
+
+    },
+
+    api: [
+    ]
+
+  };
+
+  /**
+   * @class Cursors
+   * @memberOf vegas
+   * @extends vegas.utils.ObjectCollection (An Array with extra methods)
+   *
+   * @description An object, that when instantiated will provide a listing of
+   * Cursor objects with methods to work with them.
+   */
+  vegas.Cursors = function () {
+    utils.makeObject(this, arguments, utils.ObjectCollection);
+  };
+
+  vegas.Cursors.prototype = {
+
+  };
+
+  // Creates an instance of the Cursors collection for keeping track of cursors.
+  vegas.cursors = new vegas.Cursors();
 
   vegas.module.register('cursor.js');
 

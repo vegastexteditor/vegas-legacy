@@ -3,21 +3,34 @@
       vegas = global.vegas;
 
     /**
-     * Currently this logs to standard console, future versions may include
-     * a built in simple console.
+     * @namespace init
+     * @description Everything will be initiated once all the code has been loaded.
      */
-    vegas.init = (function() {
+    vegas.init = {
 
-      var init = function () {
+      initObjects: [],
+
+      init: function () {
+
+        var initObjects = this.initObjects,
+            initObjectsLen = initObjects.length,
+            i=0;
+
+        for (; i < initObjectsLen; i++) {
+          initObjects[i].init.call(initObjects[i]);
+        }
+
         vegas.paint.startPaint();
-        vegas.utils.triggerReady();
-      };
+        vegas.utils.triggerReady(); // @depreciated @todo
+        vegas.trigger('ready');
 
-      init();
+      },
 
-      return init;
+      register: function (initObject) {
+        this.initObjects.push(initObject);
+      }
 
-    }());
+  };
 
   vegas.module.register('init.js');
 

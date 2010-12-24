@@ -2,13 +2,17 @@
   var global = (function () {return this;}).call(),
       vegas = global.vegas;
 
-    /*
-     * A container for Tabs. When there is only one pane, a pane takes up the
-     * entire window. Panes can be singular or can come in infinate
-     * multidimensional sets. When in sets the sequence of panes must be vertical
-     * or horizontal. Which allows for a "split view" of the editors Components.
+    /**
+     * @class Pane
+     * @memberOf vegas
+     * @description A container for Tabs
+     * 
+     * When there is only one pane, a pane takes up the entire window. Panes can
+     * be singular or can come in infinate multidimensional sets. When in sets
+     * the sequence of panes must be vertical or horizontal. Which allows for a
+     * "split view" of the editors Components.
      *
-     * Fore example: There can be a view that contains two vertical panes.
+     * For example, There can be a view that contains two vertical panes.
      * The first of the two would contain two vertical panes. The first of the
      * two vertical panes could contain two vertical panes, and so on.
      *
@@ -21,7 +25,7 @@
       };
 
       Pane.prototype = {
-
+        /** @lends vegas.Pane */
         init: function (data) {
           // Take in properties passed in to data object.
           vegas.utils.extend(this, data);
@@ -48,10 +52,13 @@
 
     }());
 
+    /**
+     * @namespace vegas.pane
+     */
     vegas.pane = (function () {
 
       var pane = {
-
+        /** @lends vegas.pane */
         init: function () {
 
 					var self = this;
@@ -187,8 +194,8 @@
               options = vegas.options.panes;
 
               if (!activePane){
-      return false;
-}
+                return false;
+              }
 
           	ctx.fillStyle = options.highlightColor;
 
@@ -761,12 +768,12 @@
 
 							if(typeof(pane.type) == 'string' && (pane.type == 'horizontal' || pane.type == 'vertical')) {
 
-								if (pane.type == 'horiztonal' && (!utils.isWholeNumber(pane.height) && !utils.isPercentage(pane.height))) {
+								if (pane.type == 'horiztonal' && (!utils.isNumber(pane.height) && !utils.isPercentage(pane.height))) {
 									console.error('a horiztonal pane must have a valid height specified', pane);
 									return false;
 								}
 
-								if (pane.type == 'vertical' && (!utils.isWholeNumber(pane.width) && !utils.isPercentage(pane.width))) {
+								if (pane.type == 'vertical' && (!utils.isNumber(pane.width) && !utils.isPercentage(pane.width))) {
 									console.error('a horiztonal pane must have a valid width specified', pane);
 									return false;
 								}

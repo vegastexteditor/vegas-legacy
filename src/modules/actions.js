@@ -4,11 +4,12 @@
 
     /**
      * Text actions
+     * @namespace vegas.actions
      */
     vegas.actions = (function() {
 
       var actions = {
-
+        /** @lends vegas.actions */
         actionBackspace: function(){},
         actionDelete: function(){},
         actionEnter: function(){},

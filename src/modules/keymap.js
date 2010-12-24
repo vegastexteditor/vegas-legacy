@@ -2,12 +2,13 @@
   var global = (function(){return this;}).call(),
       vegas = global.vegas;
 
+    /**
+     * @namespace vegas.keyMappings
+     */
     vegas.keyMappings = (function(){
 
-      var keySequenceId = 0;
-
       var keyMappings = {
-
+        /** @lends vegas.keyMappings */
         keySequences: {},
 
         init: function () {
@@ -19,130 +20,8 @@
 
         },
 
-//        attachKeyMappings: function (parsedKeyMappings) {
-//
-//          parsedKeyMappings = parsedKeyMappings || this.parsedKeyMappings;
-//
-//          var self = this,
-//              i = parsedKeyMappings.length,
-//              parsedKeyMapping,
-//              keys,
-//              action,
-//              context,
-//              mode;
-//
-//          while (i--) {
-//
-//            parsedKeyMapping = parsedKeyMappings[i],
-//            action = parsedKeyMapping.action,
-//            context = parsedKeyMapping.context,
-//            mode = parsedKeyMapping.mode;
-//            keys = parsedKeyMapping.keySequence;
-//
-//            this.registerKey(keys, action, context, mode,
-//              function () {
-//                self.executeAction(parsedKeyMapping.action);
-//              }
-//            );
-//
-//          }
-//
-//        },
-//
-//        registerKey: function (keys, action, context, mode, callback) {
-//
-//          var activeContext,
-//              contextName,
-//              currentMode,
-//              self,
-//              firstKey = keys[0];
-//
-//          //alert alert
-//          jQuery(document).bind('keydown', firstKey, function (e) {
-//            e.preventDefault();
-//
-//            // What to do if the key(or first key in a sequence) is matched
-//            var trigger = function () {
-//
-//              // A single key / key combo is mapped
-//              if (keys.length == 1) {
-//                callback(e);
-//              }
-//              // multiple key / key combos is mapped
-//              else if (keys.length > 1) {
-//
-//                this.keySequences[id] = {
-//                  fullSequence: keys,
-//                  sequenceMatchedIndex: 1,
-//                };
-//
-//                self.handleKeySequence(keySequenceId, firstKey, keys, action, context, mode, callback);
-//
-//                keySequenceId++;
-//
-//              }
-//            }
-//
-//            // There is no context or mode, just trigger
-//            if (!context && !mode) {
-//              trigger();
-//              return false;
-//            }
-//
-//            // A context is defined, but a mode is not
-//            if (context !== false && !mode) {
-//
-//              contextName = vegas[context].prototype.name;
-//              activeContext = vegas.session.state['activePane'];
-//
-//              // If the key was pressed in the correct context trigger the key logic
-//              if (typeof activeContext !== 'undefined' && activeContext.name == contextName) {
-//                trigger();
-//              }
-//              return false;
-//            }
-//
-//            // A mode is defined, but a context is not
-//            if (mode !== false && !context ) {
-//
-//              currentMode = ''; // @todo:
-//
-//              // If the key was pressed in the correct mode trigger the key logic
-//              if (mode == currentMode) {
-//                trigger();
-//              }
-//              return false;
-//            }
-//
-//            if (context && mode) {
-//              // @todo
-//            }
-//
-//          });
-//
-//        },
-//
-//        handleKeySequence: function (firstKey, fullKeySequence, action, context, mode, callback) {
-//
-//          console.log(key, action, context, mode, callback);
-//
-//          var id = this.sequenceId,
-//              sequenceMatchedIndex = 0;
-//
-//          var sequence = {
-//            fullSequence: key,
-//            sequenceMatchedIndex: sequenceMatchedIndex,
-//          };
-//
-//          this.keySequences[id] = sequence;
-//
-//        },
-//
-//        executeAction: function (action) {
-//          console.log('action', action);
-//        },
-
         /**
+         * Parses a keyMapping syntax string, into a usable object.
          *
          * Because generally it seems like a silly idea to define keymappings
          * within the modules them selves, this allows for consolidation of
@@ -209,7 +88,7 @@
          */
         parseKeyMappings: function (keyMappings) {
 
-          keyMappings = keyMappings || vegas.settings.keyMappings
+          keyMappings = keyMappings || vegas.settings.keyMappings;
 
           var context,
               action,
@@ -236,7 +115,7 @@
 
           while (i--) {
 
-              keyMappingString = keyMappings[i]
+              keyMappingString = keyMappings[i];
               foundKeywords = [];
               firstKeywordPos = false;
               action = false;
@@ -350,7 +229,7 @@
                 context: context,
                 mode: mode,
                 options: options,
-                keyMappingString: keyMappingString,
+                keyMappingString: keyMappingString
               };
 
           }
@@ -380,7 +259,7 @@
           // Get the commandContext if it exists
           if (context in vegas && typeof(vegas[context].prototype) == 'object') {
             if ('commandContext' in vegas[context].prototype) {
-              commandContext = vegas[context].prototype['commandContext'];
+              commandContext = vegas[context].prototype.commandContext;
             }
           }
 
@@ -405,12 +284,12 @@
 
       };
 
-      keyMappings.init();
+      vegas.init.register(keyMappings);
 
       return keyMappings;
 
     }());
 
-  vegas.module.register('command.js');
+  vegas.module.register('keymap.js');
 
 }());

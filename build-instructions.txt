@@ -1,0 +1,39 @@
+Build Instructions for linux
+
+== Get Titanium Desktop ==
+
+# Remove the current titanium
+sudo rm -rf ~/.titanium
+
+# Download a fresh copy
+cd ~/
+wget http://www.appcelerator.com/download-linux32
+
+# Extract and move it to ~/.titanium
+  tar xzf download-linux32
+  sudo mv Titanium\ Developer-* ~/.titanium
+
+# For some reason this can't be ran under a shell script
+# Run the folling command manuall
+  ~/.titanium/Titanium\ Developer
+
+# The above will give you an error, when you complete the installation
+# now do the following
+
+# from titanium forums
+  sudo rm ~/.titanium/runtime/linux/1.0.0/libg2*
+  sudo rm ~/.titanium/runtime/linux/1.0.0/libgio*
+  sudo rm ~/.titanium/runtime/linux/1.0.0/libglib*
+  sudo rm ~/.titanium/runtime/linux/1.0.0/libgobject*
+  sudo rm ~/.titanium/runtime/linux/1.0.0/libgthread*
+
+# Applications look directly under ~/.titanium for their stuff
+# when building it looks under the platform directory. So keep both.
+  cp ~/.titanium/runtime/linux/1.0.0/* ~/.titanium/runtime/
+
+== Run The Build Sript ==
+sudo sh build.sh
+
+This will create a build in ./builds/linux/vegas/..
+
+From there you can run the application with ./vegas

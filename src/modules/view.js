@@ -5,22 +5,20 @@
       utils = vegas.utils;
 
     /**
-     * A base container for visualization, also known as "windows" can contain Pane(s)
-     */
-
-    /**
-     * A group of Components inside of a single panes, can be visualized in (but
+     * @class View
+     * @memberOf vegas
+     * @description  A group of Components inside of a single panes, can be visualized in (but
      * is not limited to) the traditional pane form.
      */
     vegas.View = (function (data) {
 
       var View = function () {
-        utils.makeObject(this, arguments, 'View');
+        utils.makeObject(this, arguments);
         this.entity = 'View';
       };
 
       View.prototype = {
-
+        /** @lends vegas.View */
         init: function (data) {
           // Take in properties passed in to data object.
           utils.extend(this, data);
@@ -42,9 +40,17 @@
           // Prevent any flicker or in weird cases a gap between canvas and body
           bodyStyle.backgroundColor = vegas.settings.backgroundColor;
 
+          try {
+            this.canvas = this.context.document.getElementById('commandBar');;
+            this.ctx = this.canvas.getContext('2d');
+          }
+          catch (e) {
+            console.error('could not get the canvas object.');
+            vegas.terminate();
+            return false;
+          }
+
           // Apply necessary styles to the canvas
-          this.canvas = this.context.document.getElementsByTagName('canvas')[0];
-          this.ctx = this.canvas.getContext('2d');
 
           // For now just removes the scrollbar
           this.canvas.style.position = 'fixed';
@@ -80,11 +86,13 @@
       return View;
 
     }());
-
+    /**
+     * @namespace vegas.view
+     */
     vegas.view = (function () {
 
       var view = {
-
+        /** @lends vegas.view */
         panes: [],
 
         init: function () {
@@ -99,12 +107,17 @@
           utils.onResize(window, function (e) {
             view = self.getViewFromWindow(window); // @TODO: this doesn't need to be ran all the time.
             self.setArea(view);
-            vegas.pane.setPaneListInfo();
+            vegas.region.reflow(view);
+            utils.publish('reflow');
             vegas.paint.paint();
-
           });
 
         },
+
+        getActiveView: function () {
+          
+        },
+
         /**
          * Because there is no easy connect between a View in the session
          * and an arbitrary window.
@@ -153,7 +166,7 @@
 
           var offset = vegas.utils.offset(view.canvas);
 
-          offsetXy = {
+          var offsetXy = {
             x: offset.left,
             y: offset.top
           };
@@ -179,16 +192,35 @@
 
         api: [
           this.open,
-          this.close,
+          this.close
         ]
 
       };
 
-      view.init();
+      vegas.init.register(view);
 
       return view;
 
     }());
+
+  /**
+   * @class Views
+   * @memberOf vegas
+   * @extends vegas.utils.ObjectCollection (An Array with extra methods)
+   *
+   * @description An object, that when instantiated will provide a listing of
+   * View objects with methods to work with them.
+   */
+  vegas.Views = function () {
+    utils.makeObject(this, arguments, utils.ObjectCollection);
+  };
+
+  vegas.Views.prototype = {
+
+  };
+
+  // Creates an instance of the Views collection for keeping track of views.
+  vegas.views = new vegas.Views();
 
   vegas.module.register('view.js');
 

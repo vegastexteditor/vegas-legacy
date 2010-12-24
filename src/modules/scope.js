@@ -3,8 +3,10 @@
       vegas = global.vegas;
 
     /**
-     * Gives the file context, defines the root of the project, via a project
-     * definition file or from version control)
+     * @class Scope
+     * @memberOf vegas
+     * @description Gives the file context, defines the root of the project, via
+     * a project definition file or from version control)
      *
      * Scope ends up as a property on the resource object.
      *
@@ -16,7 +18,7 @@
       };
 
       Scope.prototype = {
-
+        /** @lends vegas.Scope */
         init: function () {
           
         }

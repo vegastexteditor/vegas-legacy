@@ -3,11 +3,16 @@
       vegas = global.vegas;
 
     /**
-     * Text selection
+     * @namespace vegas.select
+     * @description Text selection
      */
     vegas.select = (function() {
 
       var select = {
+        /** @lends vegas.select */
+        init: function () {
+          
+        },
 
         draw: function() {
 
@@ -37,6 +42,8 @@
         ]
 
       };
+
+      vegas.init.register(select);
 
       return select;
 

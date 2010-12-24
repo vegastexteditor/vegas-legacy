@@ -3,12 +3,14 @@
       vegas = global.vegas;
 
     /**
-     * A session contains all information in memory needed, views, buffers, etc.
+     * @namespace vegas.session
+     * @description A session contains all information in memory needed, views,
+     * buffers, etc.
      */
     vegas.session = (function () {
 
       var session = {
-
+        /** @lends vegas.session */
         state: {}, // This is where all session information is stored
 
         init: function () {
@@ -17,36 +19,40 @@
 
         createSession: function () {
 
-            var editArea = new vegas.EditArea({
+            var editArea1 = new vegas.EditArea({
+              name: 'Edit Area 2'
             });
 
-            var editAreaTab = new vegas.Tab({
-              component: editArea
+            var editArea2 = new vegas.EditArea({
+              name: 'Edit Area 2'
             });
 
-            var editorPane = new vegas.Pane({
-              tabs:[editAreaTab],
-              name: 'Editor Pane'
+            var editorRegion = new vegas.Region({
+              width: '100%',
+              height: '100%',
+              x: 0,
+              y: 0,
+              contents: [editArea1, editArea2]
             });
 
-            var basePane = new vegas.Pane({
-              type: 'horizontal',
-              height: 45,
-              flipStretching: true, // height is attributed to the second item in the array (the parent stretches).
-              noHandle: true,
-              panes:[editorPane, editorPane],
-              name: 'basePane'
+            var commandRegion = new vegas.CommandBar({
+              width: '100%',
+              height: '25',
+              x: 0,
+              y: 0
             });
 
-            var views = [new vegas.View({
+            var primaryView = new vegas.View({
               primary: true,
               context: vegas.view.getCurrentWindow(),
-              paneTree: basePane
-            })];
+              regionList: [editorRegion, commandRegion]
+            });
+
+            var views = [primaryView];
 
             this.state = {
               activeView: views[0],
-              activePane: editorPane,
+              activeRegion: editorRegion,
               views: views
             }
         },
@@ -92,7 +98,7 @@
 
       };
 
-      session.init();
+      vegas.init.register(session);
 
       return session;
 

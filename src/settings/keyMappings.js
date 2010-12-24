@@ -1,7 +1,8 @@
 (function() {
   var global = (function(){return this;}).call(),
-      vegas = global.vegas,
-      settings = vegas.settings || {};
+      vegas = global.vegas;
+
+  var settings = vegas.settings || {};
 
   /**
    * hotkeys / hotstrings of keys to actions
@@ -11,9 +12,24 @@
    * // In core default settings file.
    * vegas.settings.keys. = 'return in commandBar does doCommand'
    *
+   * @todo: complete modal references
+   * @todo: create dynamic modes: i in editArea creates mode insert
+   *
+   * i in editArea changes mode to insert
+   * esc in editArea changes mode to normal mode
+   * v in editArea while in normal mode changes mode to selection mode
    */
 
   vegas.settings.keyMappings = [
+
+// Application
+    'ctrl+q in CommandBar does vegas.application.quit',
+    'ctrl+shift+m in editArea does vegas.application.toggleMaximize',
+    'ctrl+r in editArea does vegas.application.reload',
+    'ctrl+shift+r in editArea does vegas.application.getFreshCopyAndReload',
+    'ctrl+shift+= in editArea does vegas.application.increaseTransparency',
+    'ctrl+shift+- in editArea does vegas.application.decreaseTransparency',
+    'f11 in editArea does vegas.application.toggleFullScreen',
 
 // Misc
     'ctrl+tab in editArea does tab.next',
@@ -25,12 +41,11 @@
     'ctrl+g in editArea does inputGoToLine',
     'ctrl+h in editArea does inputReplace',
     'ctrl+shift+. in editArea does nextBookmark',
-    'ctrl+shift+m in editArea does toggleBookmark',
     'ctrl+y in editArea does redo',
     'ctrl+z in editArea does undo',
     'ctrl+b in editArea does goToDeclaration',
     'delete in editArea does deleteNextCharacter',
-    'backspace in editArea does deletePreviousCharacter',
+    //'backspace in  does deletePreviousCharacter',
     'ctrl+backspace in editArea does deletePreviousWord',
 
 // Selection
@@ -75,8 +90,12 @@
     'pageup in editArea does cursor.pageup',
     'pagedown in editArea does cursor.pagedown',
 
+    'backspace in CommandBar does deletePreviousCharacter',
+
     // When the "enter" key is pressed while in the commandBar, triggers vegas.command.doCommand();
     'enter in CommandBar does doCommand',
+    
+    'tab in CommandBar does autocomplete',
 
     // When the "esc" key is pressed while in the commandBar, triggers vegas.command.hideCommandBar();
     'escape in CommandBar does hideCommandBar',
@@ -93,14 +112,14 @@
     'd+a does canyoudeny',
 
     // When the key sequence "v" "e" "g" "a" "s" is entered while in editor mode triggers vegas.easterEgg();
-    'v e g a s in EditArea while in editMode does vegas.easterEgg',
+    'v e g a s in CommandBar vegas.easterEgg',
 
     // When the "d" key is pressed and the next key pressed is a number and the next key pressed is "l" while in commandMode triggers editArea.deleteLine(count);
     'd {number} w in editArea does editArea.deleteWxord($1)'
 
   ];
 
-  vegas.settings = settings
+  vegas.settings = settings;
   vegas.options = settings;
 
 }());

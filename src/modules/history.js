@@ -5,6 +5,9 @@
     vegas.historyState = {};
 
     /**
+     * @namespace vegas.history
+     * @description Handles the edit history of the editor.
+     *
      * There are two kinds of history, action history and buffer history.
      *
      * action based history: will log actions performed on the buffer. By keeping
@@ -31,6 +34,7 @@
          * Performs the reverse action of the last action that was executed
          * (from the log)
          *  @todo:undo
+         *  @lends vegas.history
          */
         undo: function () {
 
@@ -82,7 +86,7 @@
 
       };
 
-      history.init();
+      vegas.init.register(history);
 
       return history;
 

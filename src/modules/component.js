@@ -3,7 +3,9 @@
       vegas = global.vegas;
 
     /**
-     * Components are visual representations of data in panes, i.e. editArea,
+     * @class Component
+     * @memberOf vegas
+     * @description Components are visual representations of data in panes, i.e. editArea,
      * fileExplorer, hintViewer
      *
      * This object registers a component, so the main painter function knows
@@ -28,7 +30,7 @@
       };
 
       Component.prototype = {
-
+        /** @lends vegas.Component */
         init: function (componentName) {
           this.id = vegas.utils.getUniqueId();
           this.registerComponent(componentName);
@@ -53,7 +55,7 @@
 
         attach: function (component) {
           this.attachTo(session.activeEditAreaPane);
-        },
+        }
 
       };
 

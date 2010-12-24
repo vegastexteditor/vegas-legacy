@@ -5,13 +5,14 @@
     vegas.clipboardState = {};
 
     /**
-     * Copy and paste functionality, this may contain support for multiple
-     * clipboards.
+     * @namespace vegas.clipboard
+     * @description Copy and paste functionality, this may contain support for
+     * multiple clipboards.
      */
     vegas.clipboard = (function(){
 
       var clipboard = {
-
+        /** @lends vegas.clipboard */
         init: function () {
 
         },
@@ -42,7 +43,7 @@
 
       };
 
-      clipboard.init();
+      vegas.init.register(clipboard);
 
       return clipboard;
 

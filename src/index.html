@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+<head>
+  <title>Vegas</title>
+  <script src="./vegas.js"></script>
+  <style>@import url("./assets/stylesheets/vegas.css");</style>
+</head>
+<body>
+<div class="region region-container">
+  <div class="region region-top">
+    <div class="region region-left edge-right">
+      <div class="tabs">
+        <div class="tab active"><span class="title">Projects</span><a class="close"></div></a>
+        <div class="tab"><span class="title">Filesystem</span><a class="close"></div></a>
+      </div>
+      <div class="components">
+        <div class="component" type="projects"></div>
+        <div class="component" type="filesystem"></div>
+      </div>
+    </div>
+
+    <div class="region region-primary">
+
+      <div class="region pane-hoirzontal region-9 edge-bottom">
+
+        <div class="region region-1 edge-right">
+          <div class="tabs">
+            <div class="tab active"><span class="title">index.html</span><a class="close"></div></a>
+            <div class="tab"><span class="title">Readme.md</span><a class="close"></div></a>
+            <div class="tab"><span class="title">bootstrap.js</span><a class="close"></div></a>
+            <div class="tab"><span class="title">buffer.js</span><a class="close"></div></a>
+          </div>
+
+          <div class="components">
+            <div class="component" data-type="editArea" data-src="index.html">
+
+              <div class="faux-scroll-container"><div class="faux-scroll"></div></div>
+              <canvas></canvas>
+
+            </div>
+            <div class="component" data-type="editArea" data-src="Readme.md"><canvas></canvas></div>
+            <div class="component" data-type="editArea" data-src="modules/bootstrap.js"><canvas></canvas></div>
+            <div class="component" data-type="editArea" data-src="modules/buffer.js"><canvas></canvas></div>
+          </div>
+        </div>
+
+
+        <div class="region region-2">
+          <div class="tabs">
+            <div class="tab"><span class="title">vegas.css</span><a class="close"></div></a>
+            <div class="tab active"><span class="title">build.js</span><a class="close"></div></a>
+          </div>
+
+          <div class="components">
+            <div class="component" data-type="editArea" data-src="assets/stylesheets/vegas.css"><canvas></canvas></div>
+            <div class="component" data-type="editArea" data-src="modules/build.js"><canvas></canvas></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="region region-3 edge-top">
+        <div class="tabs">
+          <div class="tab"><span class="title">vegas.js</span><a class="close"></div></a>
+          <div class="tab"><span class="title">command.js</span><a class="close"></div></a>
+          <div class="tab active"><span class="title">file.js</span><a class="close"></div></a>
+        </div>
+
+        <div class="components">
+          <div class="component" data-type="editArea" data-src="vegas.js"><canvas></canvas></div>
+          <div class="component" data-type="editArea" data-src="modules/command.js"><canvas></canvas></div>
+          <div class="component document" data-type="document" data-src="docs/welcome.html">
+
+            <h2><!-- intro only: Welcome to -->  <strong>Vegas</strong> <em class="script">editor</em></h2>
+
+            <ul class="actions">
+              <li>take a quick <a href="#/tour:@todo"><abbr>t</abbr>our / tutorial</a></li>
+              <li>check out the <a href="#/docs/user:@todo"><abbr>u</abbr>ser documentation</a></li>
+              <li>check out the <a href="#/docs/dev@todo"><abbr>d</abbr>eveloper documentation</a></li>
+              <li>edit your <a href="#/preferences@todo"><abbr>p</abbr>references</a></li>
+              <li>how to <a href="#/contribute:@todo"><abbr>c</abbr>ontribute</a> to the editor</li>
+              <li>submit a <a href="#/featureRequest@todo"><abbr>f</abbr>eature request</a></li>
+              <li>check for <a href="#/updates@todo"><abbr>u</abbr>pdates</a> to Vegas</li>
+              <li>something eff'ed up? file a <a href="#/bugReport@todo"><abbr>b</abbr>ug report</a></li>
+              <li><a href="#close"><abbr>c</abbr>lose</a> this silly document</li>
+            </ul>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="region region-bottom edge-top static">
+    <div class="component" data-type="commandBar">
+      <canvas id="commandBar"></canvas>
+    </div>
+  </div>
+</div>
+
+<!--
+<div class="chooser">
+
+  <ul style="opacity:.5;">
+    <li><abbr>F</abbr>ile <kbd><a href="#">unassigned</a></kbd></li>
+    <li><abbr>E</abbr>dit <kbd><a href="#">unassigned</a></kbd></li>
+    <li><abbr>V</abbr>iew <kbd><a href="#">unassigned</a></kbd></li>
+    <li><abbr>N</abbr>avigate <kbd><a href="#">unassigned</a></kbd></li>
+    <li><abbr>T</abbr>ools <kbd><a href="#">unassigned</a></kbd></li>
+    <li><abbr>P</abbr>references <kbd><a href="#">unassigned</a></kbd></li>
+    <li><abbr>W</abbr>indow <kbd><a href="#">unassigned</a></kbd></li>
+    <li>E<abbr>x</abbr>it Menu <kbd><a href="#">esc (in chooser)</a></kbd></li>
+  </ul>
+
+  <ul>
+    <li>Ne<abbr>w</abbr> Project <kbd><a href="#">ctrl+shift+n (normal)</a></kbd></li>
+    <li><abbr>N</abbr>ew File <kbd><a href="#">ctrl+n (normal)</a></li>
+    <li>Open Proj<abbr>e</abbr>ct <kbd><a href="#">ctrl+shift+o (normal)</a></li>
+    <li>Open Recent Project <kbd><a href="#">unassigned</a></kbd></li>
+    <li><abbr>C</abbr>lose Project <kbd><a href="#">unassigned</a></kbd></li>
+    <li><abbr>O</abbr>pen File <kbd><a href="#">unassigned</a></kbd></li>
+    <li>Open <abbr>R</abbr>ecent File <kbd><a href="#">unassigned</a></kbd></li>
+    <li><abbr>S</abbr>ave <kbd><a href="#">ctrl+s (normal)</a></li>
+    <li>Sa<abbr>v</abbr>e As <kbd><a href="#">unassigned</a></kbd></li>
+    <li>Save <abbr>A</abbr>ll <kbd><a href="#">ctrl+shift+s (normal)</a></li>
+    <li>E<abbr>x</abbr>it <kbd><a href="#">ctrl+q (normal)</a></li>
+    <li>Previous Menu <kbd><a href="#">< (in chooser)</a></li>
+  </ul>
+
+</div>-->
+
+</body>
+</html>

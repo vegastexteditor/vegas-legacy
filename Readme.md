@@ -31,8 +31,9 @@ Application Focus
 =====================
 
   The Primary audience is developers using web technologies for both development
-  and use. For general use this should be extensible to include other editing
-  focuses, e.i., general text editing, Ruby, Python, C, C++, Java, etc.
+  of the project and regular use. In general it should support the use of and be
+  extensible to include other editing focuses, e.i., general text editing, Ruby,
+  Python, C, C++, Java, etc.
 
   With the primary audience being web developers, the application should be
   written almost entirely in web technologies.
@@ -44,9 +45,8 @@ Target environments
   desktop applications. While allowing for existence on the web as well.
 
   Target desktop platforms include, Titanium Desktop, Future versions of
-  adobe air, Chromium OS, GNOME Shell, and any other desktop environments which
-  may provide a JavaScript API to the file system and some portions of the
-  operating system.
+  adobe air and any other desktop environments which may provide a JavaScript API
+  to the file system and some portions of the operating system.
 
  Usability Goals
 =====================
@@ -97,12 +97,13 @@ Application Concepts
      References to location for text storage (a reference to a file on disk)
 
   - **Views:**
-     A base container for visualization, also known as "windows" can contain Pane(s)
+     A base container for visualization, typically just a window instance. These
+     will contain regions.
 
-  - **Panes:**
-     A pane is basically a rectangle that takes up some layout of the editor.
-		 Examples of panes are Panes, toolbars, command bars. These entities
-		 are not overlayed over anything. They take up the editor visual area.
+  - **Regions:**
+     A typically rectangular portion of the screen containing a component. These
+     can be overlayed on top of other Regions and are for use in a canvas element.
+     visual area.
 
   - **Panes:**
      Panes are a type of pane that may be resized through the user interface,
@@ -110,6 +111,9 @@ Application Concepts
 		 window. Panes can be one or many. When in there multiple panes, a pane may
 		 be vertical or horizontal. Which allows for a "split view" of the editors
 		 Components
+
+     Panes should be done in html / css since its deals with layout structure
+     which html / css is great at.
 
   - **Components (cpnt):**
      Visual representations of data in panes, i.e. editArea, fileExplorer, hintViewer
@@ -125,7 +129,7 @@ Application Concepts
       Options that are preserved between sessions
 
   - **Actions (act):**
-     Actions are rudimentary... actions such as backspace, delete, scroll down, cut, paste
+     Actions are rudimentary... actions such as moveCursorLeft, removePreviousCharacter, scroll down, cut, paste
 
   - **Macros:**
      Sets of actions and that contain custom logic, macros should be small
