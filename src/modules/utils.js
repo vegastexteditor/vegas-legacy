@@ -18,6 +18,11 @@
   vegas.on = jQuery.subscribe;
   vegas.hook = jQuery.subscribe;
 
+  jQuery.fn.outer = function() {
+    return $( $('<div></div>').html(this.clone()) ).html();
+  }
+
+
   /**
    * vegas.trigger('myCustomEvent');
    */
@@ -26,6 +31,7 @@
   vegas.utils = {
     // Who knows may change up library... DEPRECIATED. Sticking with jQuery dependency, will call explicitly
     extend: global.jQuery.extend,
+    tpl_cache: {},
 
     // Uhhh need to remove this trash... standardize vegas.on / vegas.trigger
     publish: jQuery.publish,
@@ -229,6 +235,38 @@
 
     },
 
+    // Simple JavaScript Templating
+    // John Resig - http://ejohn.org/ - MIT Licensed
+    tmpl: function tmpl(str, data){
+      // Figure out if we're getting a template, or if we need to
+      // load the template - and be sure to cache the result.
+      var fn = !/\W/.test(str) ?
+        this.tpl_cache[str] = this.tpl_cache[str] ||
+          tmpl(document.getElementById(str).innerHTML) :
+
+        // Generate a reusable function that will serve as a template
+        // generator (and which will be cached).
+        new Function("obj",
+          "var p=[],print=function(){p.push.apply(p,arguments);};" +
+
+          // Introduce the data as local variables using with(){}
+          "with(obj){p.push('" +
+
+          // Convert the template into pure JavaScript
+          str
+            .replace(/[\r\t\n]/g, " ")
+            .split("<%").join("\t")
+            .replace(/((^|%>)[^\t]*)'/g, "$1\r")
+            .replace(/\t=(.*?)%>/g, "',$1,'")
+            .split("\t").join("');")
+            .split("%>").join("p.push('")
+            .split("\r").join("\\'")
+        + "');}return p.join('');");
+
+      // Provide some basic currying to the user
+      return data ? fn( data ) : fn;
+    },
+
     /**
      *
      * Simple object initiator, for consistency, brevity and why not some saftey.
@@ -264,11 +302,6 @@
       // Check to see if the object has been instantiated
       if (self instanceof args.callee) {
 
-        // If there is an init function, call it in its own context
-        if (typeof self.init === "function") {
-          self.init.apply(self, args);
-        }
-
         // get all properties of previous object.
         if (typeof(inheritFrom) === 'function') {
           vegas.utils.extend(self, new inheritFrom());
@@ -282,6 +315,11 @@
         return false;
       }
 
+    },
+
+    getElementObject: function (element) {
+      element = jQuery(element);
+      return element.data('object');
     },
 
     /**
@@ -553,13 +591,176 @@
 
   };
 
-  vegas.utils.ObjectCollection = function () {
-    vegas.utils.makeObject(this, arguments, Array);
+  /**
+   * Helper Object for working with a collection of traditional objects.
+   *
+   * The trackHash option is used when working with specifically structured
+   * traditional objects that contain an id property that holds a unique identifier.
+   *
+   * This allows for quick lookups with the hash id, the hash property mirrors
+   * what is in the array like collection.
+   */
+  vegas.utils.ObjectCollection = function (collection, trackHash) {
+    vegas.utils.makeObject(this, arguments);
+    this.length = 0;
+    this.hash = {};
+    this.trackHash = trackHash || true;
+
+    // If a collection is given upon instantiation, add the collection.
+    if (collection) {
+      this.add(collection);
+    }
+
+    return this;
   };
 
   vegas.utils.ObjectCollection.prototype = {
-    hook: jQuery.bind
+
+    // Bring in native array functions
+    push: Array.prototype.push,
+    pop: Array.prototype.pop,
+    slice: Array.prototype.slice,
+    splice: Array.prototype.splice,
+    shift: Array.prototype.shift,
+    unshift: Array.prototype.unshift,
+    sort: Array.prototype.sort,
+    reverse: Array.prototype.reverse,
+    concat: Array.prototype.concat,
+
+    /**
+     * Adds an object or objects to the collection, can have an optional position
+     * to insert the object or objects.
+     *
+     * @param objects {array||object} An array of objects, or an object that is to
+     * be added to the collection.
+     * @param position {Integer} The position to insert the object(s) in (optional)
+     */
+    add: function (objects, position) {
+      // Can't use position || this.length; because of falsy values will cause it to mix up e.g. 0
+      position = (position === undefined) ? this.length : position;
+
+      // if a singular object was passed in, throw it in an array to make things consistent
+      if (!objects.length) {
+        objects = [objects];
+      }
+
+      var object;
+
+      for (var i = 0; i < objects.length; i++) {
+        object = objects[i];
+
+        // add the new item to the specified position
+        this.splice(position + i, 0, object);
+
+        if (this.trackHash) {
+           // add object to hash
+          this.hash[object.id] = object;
+        }
+      }
+
+    },
+
+    /**
+     * Given the object, determine its position in the collection
+     *
+     * @param object {object} The object to find the position of
+     */
+    getObjectPosition: function (object) {
+      var len = this.length;
+
+      if (this.trackHash) {
+        for (var i = 0; i < len; i++) {
+          if (this[i].id === object.id){
+            return i;
+          }
+        }
+      }
+      else {
+        for (var i = 0; i < len; i++) {
+          if (this[i] === object){
+            return i;
+          }
+        }
+      }
+
+      return false;
+    },
+
+    /**
+     * Remove object(s) from the collection
+     *
+     * @param objects {array||object} An array of objects, or an object that is to be removed
+     */
+    remove: function (objects) {
+      var objectPosition,
+          object;
+
+        // if a singular object was passed in, throw it in an array to make things consistent
+        if (!objects.length) {
+          objects = [objects];
+        }
+
+        for (var i = 0; i < objects.length; i++) {
+          object = objects[i];
+          objectPosition = this.getObjectPosition(object);
+
+          if (objectPosition !== false) {
+            this.splice(objectPosition, 1);
+            if (this.trackHash) {
+              delete this.hash[object.id];
+            }
+          }
+          else {
+            return false;
+          }
+        }
+
+      return true;
+
+    },
+
+    /**
+     * Move an object to a new position in the collection
+     *
+     * @param object {object} An object that is to be moved
+     * @param toPosition {Integer} The position in which to move the object to
+     */
+    move: function (object, toPosition) {
+      var objectPosition = this.getObjectPosition(object);
+      this.splice(objectPosition, 1);
+      this.splice(toPosition, 0, object);
+    },
+
+    /**
+     * Replace the current collection with a new collection
+     *
+     * @param objects {array||object} An array of objects, or an object that will
+     * replace the current collection.
+     */
+    replace: function (objects) {
+      // Can pass in a singular object or an array of objects
+      if (!objects.length) {
+      // if a singular object was passed in, throw it in an array to make things consistent
+      objects = [objects];
+      }
+
+      var len = objects.length;
+      // Add the new properties to the results, starting at 0 to the length of what was passed in
+      for (var i = 0; i < len; i++) {
+        this.add(objects[i], i);
+      }
+
+      this.remove(this.slice(i)); // remove leftover objects
+
+      return this;
+
+    },
+
   };
+
+
+  jQuery.fn.getElementObject = vegas.utils.getElementObject;
+
 
   vegas.module.register('utils.js');
 

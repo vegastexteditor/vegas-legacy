@@ -14,7 +14,7 @@
         state: {}, // This is where all session information is stored
 
         init: function () {
-          this.createSession();
+//          this.createSession();
         },
 
         createSession: function () {

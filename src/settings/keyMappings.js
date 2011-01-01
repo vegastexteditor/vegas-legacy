@@ -31,6 +31,12 @@
     'ctrl+shift+- in editArea does vegas.application.decreaseTransparency',
     'f11 in editArea does vegas.application.toggleFullScreen',
 
+// regions
+    'ctrl+a does vegas.region.toggleMaximized',
+    'ctrl+shift+t does vegas.region.insertComponent',
+    'ctrl+shift+v does vegas.region.splitv',
+    'ctrl+shift+h does vegas.region.splith',
+
 // Misc
     'ctrl+tab in editArea does tab.next',
     'ctrl+shift+tab in editArea does tab.prev',

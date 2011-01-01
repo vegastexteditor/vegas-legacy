@@ -5,6 +5,24 @@ html body * {
   -webkit-user-select:none;
   user-select:none;
 }
+.application {
+  height: 681px !important;
+  width: 100% !important;
+}
+
+.region {
+  width:100%;
+  height:100%;
+  background-color:white;
+}
+
+.region-top, .region-bottom {
+  height:50%;
+}
+
+.region-left, .region-right {
+  width:50%;
+}
 
 .region.region-container {
   overflow:visible !important;
@@ -13,6 +31,29 @@ html body * {
 a {
   cursor:pointer;
   outline: none;
+}
+
+button {
+  border: 1px outset buttonshadow;
+  background-color:buttonface;
+  background-repeat: no-repeat;
+  background-position: 4px 50%;
+}
+
+button.maximize {
+  background-image: url("../images/maximize.gif");
+}
+
+button.restore {
+  background-image: url("../images/restore.gif");
+}
+
+button.splith {
+  background-image: url("../images/splith.gif");
+}
+
+button.splitv {
+  background-image: url("../images/splitv.gif");
 }
 
 body a:active {
@@ -33,6 +74,8 @@ body {
   font-family:Monaco,'Courier New',monospace;
   font-size:11px;
   color:WindowText;
+  padding:0;
+  margin:0;
 }
 
 .region.Filesystem,region-left {
@@ -51,87 +94,40 @@ body {
   width:1213px;
 }
 
-.region-left {
-  width:224px;
-}
-
-.region-1 {
-  height:223px;
-  left:0;
-  top:0;
-  width:524px;
-}
-
-.region-2 {
-  height:223px;
-  left:524px;
-  width:687px;
-}
-
-.region-3 {
-  height:131px;
-  top:225px;
-  left:0;
-  width:1212px;
-}
-
-.region.region-bottom.static {
-  height:25px;
-}
-
-.region .region {
+.region {
   display:block;
-  position:absolute;
+  float:left;
   overflow:hidden;
-}
-
-.region.aside {
-  width:200px;
-  height:100%;
-  background-color:#cecece;
-}
-
-.region.primary {
-  width:1234px;
-  height:100%;
-  background-color:#dedede;
-}
-
-.region.static {
-  width:100%;
-  height:40px;
-  background-color:#bebebe;
-  position:absolute;
-  bottom:0;
+  position: relative;
+  outline: 1px solid buttonshadow;
 }
 
 .components {
-  background-color:#fff;
+  background-color: #00FF00;
+  float: left;
+  height: 95%;
+  width: 100%;
 }
 
 .component {
   background-color:#fff;
-  height:900px;
-  width:1740px;
-  display:none;
+  height:100%;
+  width:100%;
+}
+
+.component canvas{
+  width:100%;
+  height:100%;
 }
 
 .component.active {
   display:block;
 }
 
-.region-9 {
-  height:225px;
-  width:125px;
-}
-
 .tabs {
-  background-repeat:repeat-x;
-  background-position:0 16px;
-  background-color:WindowFrame;
   height:17px;
-  width:9999px;
   overflow:hidden;
+  float:left;
 }
 
 .tab.active {
@@ -145,7 +141,7 @@ body {
   background-color:ButtonFace;
   border-right:1px solid ThreeDShadow;
   float:left;
-  line-height:16px;
+  line-height:17px;
   opacity:0.75;
   position:relative;
   padding:0 15px;
@@ -153,7 +149,7 @@ body {
 
 .tab span.title {
   left:-5px;
-  top:1px;
+  top:0px;
   position:relative;
 }
 
@@ -194,6 +190,18 @@ body {
   cursor:default;
 }
 
+.unmaximized {
+  position: static;
+  z-index: 1;
+}
+
+.maximized {
+  position: absolute;
+  z-index: 99999;
+  top: 0;
+  left: 0;
+}
+
 .edge-right-grip,.edge-left-grip {
   cursor:url(/src/assets/images/resize-vertical.cur) 7 0, pointer;
   background-color:threedhighlight;
@@ -208,6 +216,33 @@ body {
   z-index:200;
 }
 
+.region .regionPane .buttons {
+  position: absolute;
+  right: 2px;
+  top: 2px;
+}
+
+.region .regionPane button {
+/*  background-color: buttonface;*/
+  display: block;
+  float: left;
+  height: 13px;
+  margin-left: 2px;
+  padding: 0;
+  width: 17px;
+}
+
+.regionPane {
+  background-repeat:repeat-x;
+  background-position:0 16px;
+  background-color:WindowFrame;
+  width:100%;
+  height:17px;
+}
+
+buttons{
+  float:left;
+}
 
 .edge-bottom-grip,.edge-bottom-grip {
   cursor:url(/src/assets/images/resize-horizontal.cur) 7 0, pointer;

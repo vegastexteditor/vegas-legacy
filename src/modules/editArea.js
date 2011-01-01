@@ -8,31 +8,27 @@
      * @extends vegas.Region
      * @description A component where the cursor selection and text are visualized
      */
-    vegas.EditArea = (function (data) {
-
-      var EditArea = function () {
-        vegas.utils.makeObject(this, arguments, vegas.Region);
-				this.entity = 'EditArea';
+      vegas.EditArea = function (data, region) {
+        vegas.utils.makeObject(this, arguments, vegas.Component);
+        vegas.utils.extend(this, data);
+        this.region = region;
+        this.init();
       };
 
-      EditArea.prototype = {
+      vegas.EditArea.prototype = {
         /** @lends vegas.EditArea */
-        init: function (data) {
-          
+        init: function () {
+          this.entity = 'EditArea';
+          this.type = 'EditArea';
+          this.insertComponentStructure();
         },
 
-        paint: function () {
-
+        componentStructure: function () {
+          var structure = '<canvas></canvas>';
+          return structure;
         },
-
-        api: [
-        ]
 
       };
-
-      return EditArea;
-
-    }());
 
   vegas.module.register('editArea.js');
 

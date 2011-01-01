@@ -22,6 +22,11 @@
 
           view = view || vegas.session.state.activeView;
 
+
+
+          console.trace();
+
+
           // normal global paint settings
           view.ctx.textBaseline = 'bottom';
           view.ctx.lineWidth = '1';

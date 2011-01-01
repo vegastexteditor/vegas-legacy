@@ -23,7 +23,7 @@
           // Take in properties passed in to data object.
           utils.extend(this, data);
           this.setupWindow();
-          this.setupViewPort();
+//          this.setupViewPort();
         },
 
         setupWindow: function () {
@@ -96,7 +96,7 @@
         panes: [],
 
         init: function () {
-          this.attachEvents();
+          //this.attachEvents();
         },
 
         attachEvents: function () {

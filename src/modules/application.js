@@ -88,6 +88,10 @@
           }
         },
 
+        errorStop: function () {
+
+        },
+
         quit: function () {
           vegas.application.exit();
         },

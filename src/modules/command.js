@@ -20,9 +20,11 @@
    *     y: 'bottom'
    *   });
    */
-  vegas.CommandBar = function () {
-    utils.makeObject(this, arguments, vegas.Region);
-    this.entity = 'CommandBar';
+  vegas.CommandBar = function (data, region) {
+    utils.makeObject(this, arguments, vegas.Component);
+    vegas.utils.extend(this, data);
+    this.region = region;
+    this.init();
   };
 
   vegas.CommandBar.prototype = {
@@ -42,8 +44,10 @@
      *   });
      */
     init: function (data) {
-      // Take in properties passed in to data object.
-      utils.extend(this, data);
+
+      this.entity = 'CommandBar';
+      this.type = 'CommandBar';
+      this.insertComponentStructure();
 
       /**
        * @property suggested
@@ -93,6 +97,11 @@
         charsFromtop: 0 // Dummy, its a single line text field
       }
 
+    },
+
+    componentStructure: function () {
+      var structure = '<canvas></canvas>';
+      return structure;
     },
 
     /**

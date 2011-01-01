@@ -24,7 +24,6 @@
       'modules/init.js',
       'modules/utils.js', // @todo: remove plural
       'modules/gui.js',
-      'modules/macros.js',
       'modules/session.js',
       'modules/application.js',
 

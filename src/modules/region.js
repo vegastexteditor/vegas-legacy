@@ -4,29 +4,92 @@
 (function (global) {
   var vegas = global.vegas,
       utils = vegas.utils;
+  /**
+   * @class RegionPair
+   * @memberOf vegas
+   * @description Creates a set of Region that will be drawn to the screen
+   */
+  vegas.RegionPair = function (orientation, parentRegion, data) {
+    utils.makeObject(this, arguments);
+    return this.createRegionPair(orientation, parentRegion, data);
+  };
+
+  /** @lends vegas.Region */
+  vegas.RegionPair.prototype = {
+
+    createRegionPair: function (orientation, parentRegion, data) {
+
+      var thisRegion = this,
+          regionElementPair,
+          regionObjectPair = [];
+
+      regionObjectPair[0] = new vegas.Region(orientation, parentRegion, data, true);
+      regionObjectPair[1] = new vegas.Region(orientation, parentRegion, data, true);
+
+      // Inserts the markup for the region inside of the current region, sets
+      // the element to the regionPair variable
+      if (orientation == 'horizontal') {
+        regionElementPair = parentRegion.element.html('<div class="region region-horizontal region-top" id="' + regionObjectPair[0].id + '"></div><div class="region region-horizontal region-bottom" id="' + regionObjectPair[1].id + '"></div>').children();
+      }
+      else if (orientation == 'vertical') {
+        regionElementPair = parentRegion.element.html('<div class="region region-vertical region-left" id="' + regionObjectPair[0].id + '"></div><div class="region region-vertical region-left" id="' + regionObjectPair[1].id + '"></div>').children();
+      }
+      else if (orientation == 'application'){
+      }
+      else {
+        console.error("Could not determine region orientation, the function must have a type of 'horizontal' or 'vertical'.");
+      }
+
+      // Associate the region objects twith the elements
+      regionObjectPair[0].element = regionElementPair.eq(0);
+      regionObjectPair[1].element = regionElementPair.eq(1);
+
+      // Associate the elements with the region objects
+      regionElementPair.eq(0).data('object', regionObjectPair[0]);
+      regionElementPair.eq(1).data('object', regionObjectPair[1]);
+
+      // Let the region family know about eachother
+      regionObjectPair[0]._parent = parentRegion;
+      regionObjectPair[0]._sibling = regionObjectPair[1];
+      regionObjectPair[1]._parent = parentRegion;
+      regionObjectPair[1]._sibling = regionObjectPair[0];
+
+      thisRegion._children = regionObjectPair;
+
+      // Keep track of regions objects in the likley case that we need to access all regions.
+      vegas.regions.add(regionObjectPair);
+
+      return regionObjectPair;  // Returns an array containing the region objects created.
+
+    }
+  };
 
   /**
    * @class Region
    * @memberOf vegas
    * @description Creates a Region that will be drawn to the screen
    */
-  vegas.Region = function () {
+  vegas.Region = function (orientation, parentRegion, data, isPair) {
     utils.makeObject(this, arguments);
-    this.entity = 'Region';
+    vegas.utils.extend(this, data);
+    this.init();
   };
 
   /** @lends vegas.Region */
   vegas.Region.prototype = {
 
-    init: function (data) {
-      // Take in properties passed in to data object.
-      utils.extend(this, data);
-      this.uid = utils.getUniqueId();
+    init: function (orientation, parentRegion, data, isPair) {
 
-      // Keep track of region instances
-      vegas.region.regions.push(this);
+      this.orientation = orientation;
+      this.parentRegion = parentRegion;
+      this.id = utils.getUniqueId();
+      this.entity = 'Region';
+      this.components = [];
+      this.hasComponents = false;
+      this.maximized = false;
 
     },
+
 
     getType: function () {
       return this.contents[0].entity;
@@ -36,10 +99,217 @@
       return this.contents[0];
     },
 
+    associateObjectsToElements: function (wrapper, types) {
+
+      wrapper = wrapper || jQuery(document.body);
+      wrapper = wrapper.parent().parent();
+
+      types = types || ['region', 'component', 'tab'];
+
+      vegas.utils.pluralize = function (type) {return type + 's';};
+
+      var objectElements,
+          objectElementsLen,
+          objectElement,
+          type,
+          pluralType;
+
+      for (var i = 0; i < types.length; i++) {
+        type = types[i];
+        objectElements = wrapper.find('.' + type);
+        objectElementsLen = objectElements.length;
+        pluralType = vegas.utils.pluralize(type);
+
+        for (var j = 0; j < objectElementsLen; j++) {
+          objectElement = objectElements[j];
+          var object = vegas[pluralType].hash[objectElement.id];
+          jQuery(objectElement).data('object', object);
+        }
+      }
+
+    },
+
     /**
      * Remove the Region from its current location.
      */
     remove: function () {
+
+      var parentRegion = this.parent();
+
+      var sibling = this.sibling();
+
+      var wrapper = vegas.gui.insertMarkup(parentRegion.element, sibling.element.html());
+
+      this.associateObjectsToElements(wrapper);
+
+    },
+
+    parent: function () {
+      return this._parent;
+    },
+
+    sibling: function () {
+      return this._sibling;
+    },
+
+    children: function () {
+      return this._children;
+    },
+
+    /**
+     * Splits a region vertically
+     */
+    splitv: function () {
+      var components = this.components;
+      this.components = []; // remove The components from the region object.
+
+      // Insert two vertical regions
+      var newRegions = new vegas.RegionPair('vertical', this);
+
+     // Insert the components from the old region into first set the new regions.
+      for (var i = 0; i < components.length; i++) {
+        var component = components[i];
+        component.insertComponentStructure(newRegions[0]);
+      }
+
+      // @todo: alternative syntax newRegions[1].insertEditArea({title: 'untitled'});
+      component = new vegas.EditArea({title: 'untitled'}, newRegions[1]);
+
+    },
+
+    /**
+     * Splits components horizontally
+     */
+    splith: function () {
+      var components = this.components;
+      this.components = []; // remove The components from the region object.
+
+      // Insert two horizontal regions
+      var newRegions = new vegas.RegionPair('horizontal', this);
+
+      // Insert the components from the old region into first set the new regions.
+      for (var i = 0; i < components.length; i++) {
+        var component = components[i];
+        component.insertComponentStructure(newRegions[0]);
+      }
+
+      // @todo: alternative syntax newRegions[1].insertEditArea({title: 'untitled'});
+      component = new vegas.EditArea({title: 'untitled'}, newRegions[1]);
+
+    },
+
+    getApplicationRegion: function () {
+      return vegas.regions[0];
+    },
+
+    maximize: function () {
+      var applicationRegion = this.getApplicationRegion();
+
+      var regions = vegas.regions,
+          regionsLen = regions.length,
+          region;
+
+      for (var i = 0; i < regionsLen; i++) {
+        region = regions[i].element;
+        region.addClass('unmaximized');
+      }
+
+      this.element.addClass('maximized');
+
+      this.element.width(applicationRegion.element.width());
+      this.element.height(applicationRegion.element.height());
+
+      var maximizeButton = this.element.find('button[action=maximize]');
+      maximizeButton.attr('action', 'restore');
+      maximizeButton.removeClass('maximize');
+      maximizeButton.addClass('restore');
+
+
+      this.maximized = true;
+
+    },
+
+    restore: function () {
+      var applicationRegion = this.getApplicationRegion();
+
+      var regions = vegas.regions,
+          regionsLen = regions.length,
+          region;
+
+      for (var i = 0; i < regionsLen; i++) {
+        region = regions[i].element;
+        region.removeClass('unmaximized');
+      }
+
+      this.element.removeClass('maximized');
+      this.element.removeAttr("style");
+
+      var maximizeButton = this.element.find('button[action=restore]');
+      maximizeButton.attr('action', 'maximize');
+      maximizeButton.removeClass('restore');
+      maximizeButton.addClass('maximize');
+
+      this.maximized = false;
+
+    },
+
+    /**
+     * Inserts a set of two regions inside of an existing region, they can be
+     * a horizontal or vertical set of regions.
+     * 
+     * @param orientation {string} The orientation of the region pair e.g. horizontal, vertical
+     * @param id {string} Used for debugging, keeping track of what region is what.
+     */
+    insertRegionPair: function (orientation) {
+
+      var self = this,
+          regionPair;
+
+      // Inserts the markup for the region inside of the current region, sets
+      // the element to the regionPair variable
+      if (orientation == 'horizontal') {
+        regionPair = this.element.html('<div class="region region-horizontal region-top"></div><div class="region region-horizontal region-bottom"></div>').children();
+      }
+      else if (orientation == 'vertical') {
+        regionPair = this.element.html('<div class="region region-vertical region-left"></div><div class="region region-vertical region-left"></div>').children();
+      }
+      else {
+        console.error("Could not determine region orientation, the function must have a type of 'horizontal' or 'vertical'.");
+      }
+
+      var regionObjects = [],
+          regionObject;
+
+      // Instantiates a new Region and attaches it to the region element
+      regionPair.each(function (i, regionPairElement) {
+
+        regionPairElement = jQuery(regionPairElement);
+
+        regionObject = new vegas.Region({
+          orientation: orientation,
+          element: regionPairElement,
+          _parent: self
+        })
+
+        // @todo, instantiate the object first so we can get its id and attach it to the markup string
+        regionPairElement.attr('id', regionObject.id);
+
+        regionPairElement.data('object', regionObject);
+
+        // Keep track of regions objects in the case that we need to access all regions.
+        vegas.regions.add(regionObject);
+
+        regionObjects.push(regionObject);
+
+      });
+
+      // Let the region family know about eachother
+      regionObjects[0]._sibling = regionObjects[1];
+      regionObjects[1]._sibling = regionObjects[0];
+      this._children = regionObjects;
+
+
+      return regionObjects; // Returns an array containing the region objects created.
 
     },
 
@@ -62,195 +332,73 @@
       regions: [],
 
       init: function () {
-
         var self = this;
         self.attachEvents(self);
 
       },
 
+      maximize: function () {
+        this.getActiveRegion().maximize();
+      },
+
+      restore: function () {
+        this.getActiveRegion().restore();
+      },
+
+      toggleMaximized: function () {
+        var activeRegion = this.getActiveRegion();
+        if (activeRegion.maximized == false) {
+          activeRegion.maximize();
+        }
+        else {
+          activeRegion.restore();
+        }
+      },
+
+      splitv: function () {
+        this.getActiveRegion().splitv();
+      },
+
+      splith: function () {
+        this.getActiveRegion().splith();
+      },
+
       attachEvents: function (self) {
 
-        var vegas = global.vegas;
-        var view = vegas.view.getActiveView();
-        var regions = this.getRegionList(view);
+      jQuery(document).bind('click', function (e) {
 
-        for (var i = 0; i < regions.length; i++) {
-          region = regions[i];
+        var target = jQuery(e.target);
+        var targetParent = jQuery(e.target).parent();
 
-          (function(region) {
-
-            utils.onMouseDownInArea(view, region.area, function (e) {
-              // Unhighlight the old active region.
-              //vegas.region.unhighlightRegion(view, vegas.session.state.activeRegion);
-
-              // Change the the active region to what was clicked
-              vegas.session.state.activeRegion = region;
-
-              // High light the region which was clicked
-              //vegas.region.highlightActiveRegion(view);
-
-            });
-
-          }(region));
-
+        // User clicked the tab area.
+        if (target.hasClass('tab') || (targetParent.hasClass('tab') && target.hasClass('title'))) {
+          console.log('test');
         }
 
-      },
-
-      paint: function (view) {
-
-        view = view || vegas.session.state.activeView;
-
-        var regions = vegas.region.getRegionList(view),
-            ctx = view.ctx,
-            regionArea,
-            region,
-            debug = vegas.options.debug.regions,
-            regionBackgroundColor = vegas.options.regions.backgroundColor;
-
-        ctx.fillStyle = regionBackgroundColor;
-
-        ctx.clearRect(0,0,view.width,view.height);
-
-        for (var i = 0; i < regions.length; i++) {
-
-          region = regions[i];
-          regionArea = region.area;
-
-          if (region.backgroundColor) {
-            regionBackgroundColor = region.backgroundColor;
-            ctx.fillStyle = regionBackgroundColor;
-          }
-
-          // Draw the region background
-          ctx.fillRect(
-            regionArea.x,
-            regionArea.y,
-            regionArea.width,
-            regionArea.height
-          );
-
-        }
-      },
-
-      reflow: function (view) {
-
-          var regions = vegas.session.state.activeView.regionList, // @TODO: just wrong, this is not a 2d region list!
-              regionsLen = regions.length,
-              region;
-
-          // Reposition the regions
-          vegas.region.preprocessRegionList(view);
-
-          while (regionsLen--) {
-            region = regions[regionsLen];
-            if ('reflow' in region) {
-              // Reflow the contents of the regions
-              region.reflow();
-            }
-          }
-
-      },
-
-      preprocessRegionList: function (view) {
-
-        // Default to the acitveView unlles otherwise specified.
-        view = view || vegas.session.state.activeView;
-
-        var regionList = vegas.session.state.activeView.regionList,
-            width,
-            height,
-            x,
-            y;
-
-        var i = regionList.length;
-        while (i--) {
-          region = regionList[i];
-          width = region.width;
-          height = region.height;
-          x = region.x;
-          y = region.y;
-
-          if (utils.isPercentage(width)) {
-            width = utils.getPercentValue(width, view.width);
-          }
-
-          if (utils.isPercentage(height)) {
-            height = utils.getPercentValue(height, view.height);
-          }
-
-          if (!utils.isNumber(region.y)) {
-            if (region.y == 'bottom') {
-              y = view.height - height;
-            }
-            if (region.y == 'top') {
-              y = 0;
-            }
-          }
-
-          if (!utils.isNumber(region.x)) {
-            if (region.x == 'right') {
-              x = view.width - width;
-            }
-            if (region.x == 'top') {
-              x = 0;
-            }
-          }
-
-          regionList[i].area = {
-            x: x,
-            y: y,
-            width: width,
-            height: height
-          };
-
-        }
-        view.regionListPreprocessed = true;
-        view.regionList = regionList;
-
-      },
-
-      getRegionList: function (view) {
-
-        // Default to the acitveView unlles otherwise specified.
-        view = view || vegas.session.state.activeView;
-
-        if (!view.regionListPreprocessed) {
-          this.preprocessRegionList(view);
+        // User clicked the clicked in the button area area.
+        if (target[0].tagName == 'BUTTON' && target.parent().hasClass('buttons')) {
+          var region = target.parents('.region:first').data('object');
+          var action = target.attr('action');
+          region[action]();
         }
 
-        return view.regionList;
+        var regionObject = false;
 
-      },
+        if (target.hasClass('region')) {
+            regionObject = target.data('object');
+        }
+        else {
+          var foundRegion = target.parents('.region:first');
+          if (foundRegion.length > 0) {
+            regionObject = foundRegion.data('object');
+          }
+        }
 
-      highlightActiveRegion: function (view) {
+        if (regionObject !== false) {
+          vegas.session.state.activeRegion = regionObject;
+        }
 
-        view = view || vegas.session.state.activeView;
-
-        var activeRegion = vegas.session.state.activeRegion,
-            ctx = view.ctx,
-            lineWidthOld = ctx.lineWidth,
-            options = vegas.options.regions;
-
-            if (!activeRegion){
-              return false;
-            }
-
-          ctx.fillStyle = options.highlightColor;
-
-          // Highlight the active region
-          ctx.lineWidth = options.HighlightStrokeSize;
-
-          utils.cleanStrokeRect(
-            ctx,
-            activeRegion.area.x,
-            activeRegion.area.y,
-            activeRegion.area.width,
-            activeRegion.area.height
-          );
-
-          ctx.lineWidth = lineWidthOld;
-
+      });
 
       },
 
