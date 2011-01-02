@@ -47,6 +47,7 @@
 
       this.entity = 'CommandBar';
       this.type = 'CommandBar';
+      this.initComponent();
       this.insertComponentStructure();
 
       /**

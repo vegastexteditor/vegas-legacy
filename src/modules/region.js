@@ -72,7 +72,7 @@
   vegas.Region = function (orientation, parentRegion, data, isPair) {
     utils.makeObject(this, arguments);
     vegas.utils.extend(this, data);
-    this.init();
+    this.init(orientation, parentRegion, data, isPair);
   };
 
   /** @lends vegas.Region */
@@ -81,7 +81,7 @@
     init: function (orientation, parentRegion, data, isPair) {
 
       this.orientation = orientation;
-      this.parentRegion = parentRegion;
+      this._parent = parentRegion;
       this.id = utils.getUniqueId();
       this.entity = 'Region';
       this.components = [];
@@ -99,49 +99,66 @@
       return this.contents[0];
     },
 
-    associateObjectsToElements: function (wrapper, types) {
+    associateObjectsToElements: function (wrapper) {
 
-      wrapper = wrapper || jQuery(document.body);
-      wrapper = wrapper.parent().parent();
+      // Since the sibling regions contents may contain any number of components or regions
+      // we need to do re-associate objects to elements and elements to objects.
+      var regions = wrapper.find('div.region').andSelf(),
+          regionsLen = regions.length,
+          regionElement,
+          regionId,
+          regionObject;
 
-      types = types || ['region', 'component', 'tab'];
+      for (var i = 0; i < regionsLen; i++) {
+        regionElement = jQuery(regions[i]);
+        regionId = regionElement[0].id;
+        regionObject = vegas.regions.hash[regionId];
+        // reattach the elements that are stored with the object as well
+        regionObject.element = regionElement;
+        regionObject._parent = regionElement.parents('div.region:first').data('object');
+        regionObject._sibling = regionElement.siblings().data('object');
+        debugger;
+        // We are going to repopulate the components array.
+        regionObject.components = [];
+        // re-attach the objects to the element via the data function.
+        regionElement.data('object', regionObject);
 
-      vegas.utils.pluralize = function (type) {return type + 's';};
+        var components = regionElement.find('div.component'),
+            componentsLen = components.length,
+            componentElement,
+            componentId,
+            componentObject;
 
-      var objectElements,
-          objectElementsLen,
-          objectElement,
-          type,
-          pluralType;
+        for (var j = 0; j < componentsLen; j++) {
+          componentElement = jQuery(components[j]);
+          componentId = componentElement[0].id;
+          componentObject = vegas.components.hash[componentId];
+          // reattach the elements that are stored with the object as well
+          componentObject.element = componentElement;
+          // re-attach the objects to the element via the data function.
+          componentElement.data('object', componentObject);
+          console.log('tab element:', componentObject.getTabElement());
+          componentObject.getTabElement().data('object', componentObject);
 
-      for (var i = 0; i < types.length; i++) {
-        type = types[i];
-        objectElements = wrapper.find('.' + type);
-        objectElementsLen = objectElements.length;
-        pluralType = vegas.utils.pluralize(type);
-
-        for (var j = 0; j < objectElementsLen; j++) {
-          objectElement = objectElements[j];
-          var object = vegas[pluralType].hash[objectElement.id];
-          jQuery(objectElement).data('object', object);
+          // we also need to update the components array in the containing region.
+          regionObject.components.push(componentObject);
         }
-      }
 
+      }
     },
 
     /**
      * Remove the Region from its current location.
      */
     remove: function () {
-
       var parentRegion = this.parent();
 
       var sibling = this.sibling();
 
-      var wrapper = vegas.gui.insertMarkup(parentRegion.element, sibling.element.html());
+      // Remove the region by replacing with the sibling regions contents
+      parentRegion.element.html(sibling.element.html());
 
-      this.associateObjectsToElements(wrapper);
-
+      this.associateObjectsToElements(parentRegion.element);
     },
 
     parent: function () {

@@ -25,7 +25,6 @@
       vegas.utils.makeObject(this, arguments);
       this.entity = 'Component';
       this.elements = [];
-      this.id = vegas.utils.getUniqueId();
     };
 
     vegas.Component.prototype = {
@@ -48,6 +47,8 @@
 
         var component = this;
 
+        this.region = region;
+
         // Since regions can contain other regions OR components, we don't want to
         // create the component/tabs wrapper elements if its going to have a region
         if (region.components.length < 1) {
@@ -60,7 +61,7 @@
 
         // Insert the components into the wrapper elements
         var componentElement = componentsWrapper.append('<div class="component component-' + component.type + '" id="' + component.id + '">' + component.componentStructure() + '</div>').find('.component:last');
-        var tabElement = tabsWrapper.append('<div class="tab"><span class="title">' + component.title + '</span><a class="close"></a></div>').find('.tab:last');
+        var tabElement = tabsWrapper.append('<div class="tab" id="tab-' + component.id + '"><span class="title tab-title">' + component.title + '</span><a class="close"></a></div>').find('.tab:last');
 
         component.element = componentElement; // keep track of the primary component element
 
@@ -81,6 +82,10 @@
 
       },
 
+      getTabElement: function () {
+        return jQuery('#tab-' + this.id);
+      },
+
       insertComponentContainer: function (region) {
         var buttonMarkup = '<div class="buttons"><button class="splitv" action="splitv"></button><button class="splith" action="splith"></button><button class="maximize" action="maximize"></button></div>';
         var componentsWrapperMarkup = '<div class="regionPane"><div class="tabs"></div>' + buttonMarkup + '</div><div class="components"></div>';
@@ -88,7 +93,7 @@
       },
 
       close: function () {
-        jQuery(this.elements.tabElement).remove();
+        this.getTabElement().remove();
         jQuery(this.element).remove();
 
         var components = this.region.components,
@@ -125,19 +130,19 @@
     };
 
 
-  vegas.component = { // ghetto @todo:fix
-    init: function () {
-      jQuery(document).bind('click', function (e) {
-        var target = jQuery(e.target);
-
-        if (target.parent().hasClass('tab') && target.hasClass('close')) {
-          var componentObject = target.parent().data('object');
-          componentObject.close();
-        }
-
-      });
-    }
-  };
+//  vegas.component = { // ghetto @todo:fix
+//    init: function () {
+//      jQuery(document).bind('click', function (e) {
+//        var target = jQuery(e.target);
+//
+//        if (target.parent().hasClass('tab') && target.hasClass('close')) {
+//          var componentObject = target.parent().data('object');
+//          componentObject.close();
+//        }
+//
+//      });
+//    }
+//  };
   
   /**
    * @class Regions
@@ -172,9 +177,6 @@
 
   // Creates an instance of the Region collection for keeping track of regions.
   vegas.components = new vegas.Components();
-
-
-  vegas.component.init(); // ghetto @todo:fix
 
   vegas.module.register('component.js');
 

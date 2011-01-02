@@ -11,6 +11,7 @@
       initObjects: [],
 
       init: function () {
+        
 
         var initObjects = this.initObjects,
             initObjectsLen = initObjects.length,
@@ -20,7 +21,7 @@
           initObjects[i].init.call(initObjects[i]);
         }
 
-//        vegas.paint.startPaint();
+        // vegas.paint.startPaint();
         vegas.utils.triggerReady(); // @depreciated @todo
         vegas.trigger('ready');
 

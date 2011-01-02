@@ -83,6 +83,103 @@
 
     }());
 
+    vegas.tab = (function () {
+
+      var tab = {
+        init: function () {
+          this.attachEvents();
+        },
+
+        attachEvents: function () {
+          this.attachTabDragEvent();
+          this.attachTabCloseEvent();
+        },
+
+        attachTabDragEvent: function () {
+
+          jQuery(document).bind('mousedown', function (eDown) {
+
+            var dragStarted = false;
+
+            var tabElement = jQuery(eDown.target);
+            var offset = tabElement.offset();
+
+            var offsetLeft = eDown.clientX - offset.left;
+            var offsetTop = eDown.clientY - offset.top;
+
+            var isPartOfTabElement = false;
+
+            if (tabElement.hasClass('tab-title')) {
+              tabElement = tabElement.parent();
+              isPartOfTabElement = true;
+            }
+
+            if (tabElement.hasClass('tab')) {
+              isPartOfTabElement = true;
+            }
+
+            if (!isPartOfTabElement) {
+              return false;
+            }
+
+            var ghostElement = tabElement.clone();
+            var ghostElementStyle = ghostElement[0].style;
+
+            var drag = function (eDrag) {
+
+              var mode = 'horizontal';
+
+              if (!dragStarted) {
+                // When the drag Begins
+                jQuery(document.body).prepend(ghostElement);
+                ghostElement.css({position: 'absolute', zIndex: 1});
+                dragStarted = true;
+              }
+
+              // While Dragging
+              if (mode == 'horizontal') {
+                ghostElementStyle.left = (eDrag.clientX - offsetLeft) + 'px';
+                ghostElementStyle.top = (eDrag.clientY - offsetTop) + 'px';
+              }
+
+            };
+
+            jQuery(document).bind('mousemove', drag);
+
+            jQuery(document).bind('mouseup', function dragStop(eDragStop) {
+
+              // when the dragging stops
+
+              jQuery(document).unbind('mousemove', drag);
+              jQuery(document).unbind('mouseup', dragStop);
+            });
+
+          });
+
+
+
+        },
+
+        attachTabCloseEvent: function () {
+
+          jQuery(document).bind('click', function (e) {
+            var target = jQuery(e.target);
+
+            if (target.parent().hasClass('tab') && target.hasClass('close')) {
+              var componentObject = target.parent().data('object');
+              componentObject.close();
+            }
+
+          });
+
+        }
+      };
+
+      vegas.init.register(tab);
+
+      return tab;
+
+    }());
 
   /**
    * @class Tabs

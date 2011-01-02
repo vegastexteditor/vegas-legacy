@@ -20,6 +20,7 @@
         init: function () {
           this.entity = 'EditArea';
           this.type = 'EditArea';
+          this.initComponent();
           this.insertComponentStructure();
         },
 

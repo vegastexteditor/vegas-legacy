@@ -47,6 +47,7 @@
             var editArea2 = new vegas.EditArea({title: 'editarea 1'}, regionPair4[1]);
             var editArea4 = new vegas.EditArea({title: 'editarea 1'}, regionPair3[0]);
             var editArea5 = new vegas.EditArea({title: 'editarea 1'}, regionPair3[1]);
+            console.info('created EditAreas', editArea1, editArea2, editArea4, editArea5);
 
             var commandBar1 = new vegas.CommandBar({title: 'command bar1'}, regionPair1[1]);
             var commandBar2 = new vegas.CommandBar({title: 'command bar1'}, regionPair1[1]);
