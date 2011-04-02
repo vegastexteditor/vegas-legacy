@@ -10,7 +10,8 @@
 
       /**
        * @constant SPADE
-       * @description the spade ascii character */
+       * @description the spade ascii character
+       */
       vegas.SPADE = String.fromCharCode(9824);
 
       var application = {

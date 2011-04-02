@@ -110,7 +110,7 @@
 							paneBackgroundColor = vegas.options.panes.backgroundColor;
 
           this.highlightActivePane();
-          
+
 					ctx.fillStyle = paneBackgroundColor;
 
           ctx.clearRect(0,0,view.width,view.height);
@@ -166,7 +166,7 @@
                 paneBackgroundColor = 'rgba('+Math.floor(Math.random(0,1) * 255)+','+Math.floor(Math.random(0,1) * 255)+','+Math.floor(Math.random(0,1) * 255)+',.5)';
                 ctx.fillStyle = paneBackgroundColor;
               }
-              
+
               var paneHandleArea = pane.handle.area;
 
               // console.log(paneHandleArea);
@@ -187,7 +187,7 @@
         highlightActivePane: function (view) {
 
 					view = view || vegas.session.state.activeView;
-          
+
           var activePane = vegas.session.state.activePane,
               ctx = view.ctx,
               lineWidthOld = ctx.lineWidth,
@@ -201,7 +201,7 @@
 
             // Highlight the active pane
             ctx.lineWidth = options.HighlightStrokeSize;
-            
+
             vegas.utils.cleanStrokeRect(
               ctx,
               activePane.area.x,
@@ -216,7 +216,7 @@
         },
 
         unhighlightPane: function (view, pane) {
-          
+
 					view = view || vegas.session.state.activeView;
 
           var ctx = view.ctx,
@@ -242,7 +242,7 @@
           );
 
           ctx.lineWidth = lineWidthOld;
-            
+
         },
 
         drawPane: function (pane, view) {
@@ -255,7 +255,7 @@
 					ctx.fillStyle = paneBackgroundColor;
 
           ctx.clearRect(0,0,view.width,view.height);
-          
+
           // Highlight the active pane
           ctx.strokeRect(
             pane.area.x + 1,

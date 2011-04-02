@@ -44,20 +44,20 @@
             console.info('Created Regions: ', regionPair1, regionPair2, regionPair3, regionPair4);
 
             var editArea1 = new vegas.EditArea({title: 'editarea 1'}, regionPair4[0]);
-            var editArea2 = new vegas.EditArea({title: 'editarea 1'}, regionPair4[1]);
-            var editArea4 = new vegas.EditArea({title: 'editarea 1'}, regionPair3[0]);
-            var editArea5 = new vegas.EditArea({title: 'editarea 1'}, regionPair3[1]);
+            var editArea2 = new vegas.EditArea({title: 'editarea 2'}, regionPair4[1]);
+            var editArea4 = new vegas.EditArea({title: 'editarea 3'}, regionPair3[0]);
+            var editArea5 = new vegas.EditArea({title: 'editarea 4'}, regionPair3[1]);
             console.info('created EditAreas', editArea1, editArea2, editArea4, editArea5);
 
             var commandBar1 = new vegas.CommandBar({title: 'command bar1'}, regionPair1[1]);
-            var commandBar2 = new vegas.CommandBar({title: 'command bar1'}, regionPair1[1]);
-            var commandBar3 = new vegas.CommandBar({title: 'command bar1'}, regionPair1[1]);
-            var commandBar4 = new vegas.CommandBar({title: 'command bar1'}, regionPair1[1]);
-            var commandBar5 = new vegas.CommandBar({title: 'command bar1'}, regionPair1[1]);
+            var commandBar2 = new vegas.CommandBar({title: 'command bar2'}, regionPair1[1]);
+            var commandBar3 = new vegas.CommandBar({title: 'command bar3'}, regionPair1[1]);
+            var commandBar4 = new vegas.CommandBar({title: 'command bar4'}, regionPair1[1]);
+            var commandBar5 = new vegas.CommandBar({title: 'command bar5'}, regionPair1[1]);
 
             console.info('created CommandBars', commandBar1, commandBar2, commandBar3, commandBar4, commandBar5);
 
-//            self.debugRegions();
+            self.debugRegions();
 
           });
 
@@ -108,6 +108,10 @@
 
         },
 
+        /**
+         * Creates the base application markup wrapping, this is the first
+         * piece of markup displayed in the body.
+         */
         insertApplicationRegion: function () {
 
           var regionObject = new vegas.Region('application', false, null, false);

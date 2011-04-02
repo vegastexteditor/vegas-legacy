@@ -17,6 +17,8 @@ wget http://www.appcelerator.com/download-linux32
 # Run the folling command manuall
   ~/.titanium/Titanium\ Developer
 
+# (install to my home directory)
+
 # The above will give you an error, when you complete the installation
 # now do the following
 
@@ -29,7 +31,7 @@ wget http://www.appcelerator.com/download-linux32
 
 # Applications look directly under ~/.titanium for their stuff
 # when building it looks under the platform directory. So keep both.
-  cp ~/.titanium/runtime/linux/1.0.0/* ~/.titanium/runtime/
+  cp -R ~/.titanium/runtime/linux/1.0.0/* ~/.titanium/runtime/
 
 == Run The Build Sript ==
 sudo sh build.sh

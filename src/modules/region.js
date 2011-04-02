@@ -29,12 +29,19 @@
       // Inserts the markup for the region inside of the current region, sets
       // the element to the regionPair variable
       if (orientation == 'horizontal') {
-        regionElementPair = parentRegion.element.html('<div class="region region-horizontal region-top" id="' + regionObjectPair[0].id + '"></div><div class="region region-horizontal region-bottom" id="' + regionObjectPair[1].id + '"></div>').children();
+        regionElementPair = parentRegion.element.html(
+        '<div class="region region-horizontal region-top" id="' + regionObjectPair[0].id + '"></div>' + 
+        '<div class="region region-horizontal region-bottom" id="' + regionObjectPair[1].id + '"></div>'
+        ).children(); // Get the elements that we just created
       }
       else if (orientation == 'vertical') {
-        regionElementPair = parentRegion.element.html('<div class="region region-vertical region-left" id="' + regionObjectPair[0].id + '"></div><div class="region region-vertical region-left" id="' + regionObjectPair[1].id + '"></div>').children();
+        regionElementPair = parentRegion.element.html(
+          '<div class="region region-vertical region-left" id="' + regionObjectPair[0].id + '"></div>' + 
+          '<div class="region region-vertical region-left" id="' + regionObjectPair[1].id + '"></div>'
+        ).children(); // Get the elements that we just created
       }
       else if (orientation == 'application'){
+        // Its the application wrapper, do nothing.
       }
       else {
         console.error("Could not determine region orientation, the function must have a type of 'horizontal' or 'vertical'.");
@@ -51,6 +58,7 @@
       // Let the region family know about eachother
       regionObjectPair[0]._parent = parentRegion;
       regionObjectPair[0]._sibling = regionObjectPair[1];
+
       regionObjectPair[1]._parent = parentRegion;
       regionObjectPair[1]._sibling = regionObjectPair[0];
 
@@ -90,61 +98,12 @@
 
     },
 
-
     getType: function () {
       return this.contents[0].entity;
     },
 
     getActiveContents: function () {
       return this.contents[0];
-    },
-
-    associateObjectsToElements: function (wrapper) {
-
-      // Since the sibling regions contents may contain any number of components or regions
-      // we need to do re-associate objects to elements and elements to objects.
-      var regions = wrapper.find('div.region').andSelf(),
-          regionsLen = regions.length,
-          regionElement,
-          regionId,
-          regionObject;
-
-      for (var i = 0; i < regionsLen; i++) {
-        regionElement = jQuery(regions[i]);
-        regionId = regionElement[0].id;
-        regionObject = vegas.regions.hash[regionId];
-        // reattach the elements that are stored with the object as well
-        regionObject.element = regionElement;
-        regionObject._parent = regionElement.parents('div.region:first').data('object');
-        regionObject._sibling = regionElement.siblings().data('object');
-        debugger;
-        // We are going to repopulate the components array.
-        regionObject.components = [];
-        // re-attach the objects to the element via the data function.
-        regionElement.data('object', regionObject);
-
-        var components = regionElement.find('div.component'),
-            componentsLen = components.length,
-            componentElement,
-            componentId,
-            componentObject;
-
-        for (var j = 0; j < componentsLen; j++) {
-          componentElement = jQuery(components[j]);
-          componentId = componentElement[0].id;
-          componentObject = vegas.components.hash[componentId];
-          // reattach the elements that are stored with the object as well
-          componentObject.element = componentElement;
-          // re-attach the objects to the element via the data function.
-          componentElement.data('object', componentObject);
-          console.log('tab element:', componentObject.getTabElement());
-          componentObject.getTabElement().data('object', componentObject);
-
-          // we also need to update the components array in the containing region.
-          regionObject.components.push(componentObject);
-        }
-
-      }
     },
 
     /**
@@ -159,6 +118,7 @@
       parentRegion.element.html(sibling.element.html());
 
       this.associateObjectsToElements(parentRegion.element);
+
     },
 
     parent: function () {
@@ -183,13 +143,13 @@
       // Insert two vertical regions
       var newRegions = new vegas.RegionPair('vertical', this);
 
-     // Insert the components from the old region into first set the new regions.
+     // Insert the components from the old region into the first slot of the new region pair
       for (var i = 0; i < components.length; i++) {
         var component = components[i];
         component.insertComponentStructure(newRegions[0]);
       }
 
-      // @todo: alternative syntax newRegions[1].insertEditArea({title: 'untitled'});
+      // Create a new Component empty edit area component for the second slot
       component = new vegas.EditArea({title: 'untitled'}, newRegions[1]);
 
     },
@@ -204,13 +164,13 @@
       // Insert two horizontal regions
       var newRegions = new vegas.RegionPair('horizontal', this);
 
-      // Insert the components from the old region into first set the new regions.
+     // Insert the components from the old region into the first slot of the new region pair
       for (var i = 0; i < components.length; i++) {
         var component = components[i];
         component.insertComponentStructure(newRegions[0]);
       }
 
-      // @todo: alternative syntax newRegions[1].insertEditArea({title: 'untitled'});
+      // Create a new Component empty edit area component for the second slot
       component = new vegas.EditArea({title: 'untitled'}, newRegions[1]);
 
     },
@@ -277,7 +237,7 @@
      * @param orientation {string} The orientation of the region pair e.g. horizontal, vertical
      * @param id {string} Used for debugging, keeping track of what region is what.
      */
-    insertRegionPair: function (orientation) {
+    __DELETE__insertRegionPair: function (orientation) {
 
       var self = this,
           regionPair;
@@ -328,6 +288,54 @@
 
       return regionObjects; // Returns an array containing the region objects created.
 
+    },
+
+    associateObjectsToElements: function (wrapper) {
+
+      // Since the sibling regions contents may contain any number of components or regions
+      // we need to do re-associate objects to elements and elements to objects.
+      var regions = wrapper.find('div.region').andSelf(),
+          regionsLen = regions.length,
+          regionElement,
+          regionId,
+          regionObject;
+
+      for (var i = 0; i < regionsLen; i++) {
+        regionElement = jQuery(regions[i]);
+        regionId = regionElement[0].id;
+        regionObject = vegas.regions.hash[regionId];
+        // reattach the elements that are stored with the object as well
+        regionObject.element = regionElement;
+        regionObject._parent = regionElement.parents('div.region:first').data('object');
+        regionObject._sibling = regionElement.siblings().data('object');
+        debugger;
+        // We are going to repopulate the components array.
+        regionObject.components = [];
+        // re-attach the objects to the element via the data function.
+        regionElement.data('object', regionObject);
+
+        var components = regionElement.find('div.component'),
+            componentsLen = components.length,
+            componentElement,
+            componentId,
+            componentObject;
+
+        for (var j = 0; j < componentsLen; j++) {
+          componentElement = jQuery(components[j]);
+          componentId = componentElement[0].id;
+          componentObject = vegas.components.hash[componentId];
+          // reattach the elements that are stored with the object as well
+          componentObject.element = componentElement;
+          // re-attach the objects to the element via the data function.
+          componentElement.data('object', componentObject);
+          console.log('tab element:', componentObject.getTabElement());
+          componentObject.getTabElement().data('object', componentObject);
+
+          // we also need to update the components array in the containing region.
+          regionObject.components.push(componentObject);
+        }
+
+      }
     },
 
     /*
@@ -441,7 +449,7 @@
   /**
    * @class Regions
    * @memberOf vegas
-   * @extends vegas.utils.ObjectCollection (An Array with extra methods)
+   * @extends vegas.utils.ObjectCollection
    *
    * @description An object, that when instantiated will provide a listing of
    * Region objects with methods to work with them.

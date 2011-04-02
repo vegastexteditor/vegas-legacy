@@ -1,0 +1,364 @@
+html body * {
+  cursor:default;
+  -moz-user-select:none;
+  -khtml-user-select:none;
+  -webkit-user-select:none;
+  user-select:none;
+}
+
+.application {
+  height: 681px !important;
+  width: 100% !important;
+}
+
+.region {
+  width:100%;
+  height:100%;
+  background-color:white;
+}
+
+.region-top, .region-bottom {
+  height:50%;
+}
+
+.region-left, .region-right {
+  width:50%;
+}
+
+.region.region-container {
+  overflow:visible !important;
+}
+
+a {
+  cursor:pointer;
+  outline: none;
+}
+
+button {
+  border: 1px outset buttonshadow;
+  background-color:buttonface;
+  background-repeat: no-repeat;
+  background-position: 4px 50%;
+}
+
+button.maximize {
+  background-image: url("../images/maximize.gif");
+}
+
+button.restore {
+  background-image: url("../images/restore.gif");
+}
+
+button.splith {
+  background-image: url("../images/splith.gif");
+}
+
+button.splitv {
+  background-image: url("../images/splitv.gif");
+}
+
+body a:active {
+  outline: 1px dashed #01BF00;
+}
+
+a:focus {
+  outline: 1px dashed #225F17;
+}
+
+a:visited {
+
+}
+
+body {
+  overflow:hidden;
+  height:305px;
+  font-family:Monaco,'Courier New',monospace;
+  font-size:11px;
+  color:WindowText;
+  padding:0;
+  margin:0;
+}
+
+.region.Filesystem {
+  top:0;
+  left:0;
+  height:358px;
+  width:225px;
+  border-right:0;
+  border-bottom:0;
+}
+
+.region.region-primary {
+  height:357px;
+  left:224px;
+  top:0;
+  width:1213px;
+}
+
+.region {
+  display:block;
+  float:left;
+  overflow:hidden;
+  position: relative;
+  outline: 1px solid buttonshadow;
+}
+
+.components {
+  background-color: #00FF00;
+  float: left;
+  height: 95%;
+  width: 100%;
+}
+
+.component {
+  background-color:#fff;
+  height:100%;
+  width:100%;
+}
+
+.component canvas{
+  width:100%;
+  height:100%;
+}
+
+.component.active {
+  display:block;
+}
+
+.tabs {
+  height:17px;
+  width:100%;
+  overflow:hidden;
+  float:left;
+}
+
+.tab.active {
+  background-color:ButtonHighlight;
+  border-bottom:medium none;
+  font-weight:700;
+  opacity:1;
+}
+
+.tab.spacer{
+  height: 17px;
+  visibility: hidden;
+}
+
+.tab {
+  background-color:ButtonFace;
+  border-right:1px solid ThreeDShadow;
+  float:left;
+  line-height:17px;
+  opacity:0.75;
+  position:relative;
+  padding:0 15px;
+}
+
+.tab span.title {
+  left:-5px;
+  top:0px;
+  position:relative;
+}
+
+.tab .close {
+  background-image:url(data:image/gif;base64,R0lGODlhBQAFAIABAAAAAP///yH5BAEKAAEALAAAAAAFAAUAAAIHRG55YciPCgA7);
+  background-position:2px 2px;
+  background-repeat:no-repeat;
+  height:5px;
+  position:absolute;
+  right:5px;
+  top:4px;
+  width:5px;
+  padding:2px;
+}
+
+.close:active {
+  outline:1px solid #6F6F6F;
+}
+
+.faux-scroll-container {
+  height:208px;
+  left:-3px;
+  overflow-x:hidden;
+  overflow-y:scroll;
+  position:relative;
+  width:100%;
+}
+
+.faux-scroll {
+  height:1024px;
+  width:100%;
+}
+
+.cursor-grip * {
+  cursor:url(/src/assets/images/resize-vertical.cur) 7 0, pointer;
+}
+.cursor-default * {
+  cursor:default;
+}
+
+.unmaximized {
+  position: static;
+  z-index: 1;
+}
+
+.maximized {
+  position: absolute;
+  z-index: 99999;
+  top: 0;
+  left: 0;
+}
+
+.edge-right-grip,.edge-left-grip {
+  cursor:url(/src/assets/images/resize-vertical.cur) 7 0, pointer;
+  background-color:threedhighlight;
+  border-left:1px solid threedface;
+  border-right:1px solid threedshadow;
+  height:999px;
+  opacity:0.5;
+  position:absolute;
+  right:0;
+  top:0;
+  width:1px;
+  z-index:200;
+}
+
+.region .regionPane .buttons {
+  position: absolute;
+  right: 2px;
+  top: 2px;
+}
+
+.region .regionPane button {
+/*  background-color: buttonface;*/
+  display: block;
+  float: left;
+  height: 13px;
+  margin-left: 2px;
+  padding: 0;
+  width: 17px;
+}
+
+.regionPane {
+  background-repeat:repeat-x;
+  background-position:0 16px;
+  background-color:WindowFrame;
+  width:100%;
+  height:17px;
+}
+
+buttons{
+  float:left;
+}
+
+.edge-bottom-grip,.edge-bottom-grip {
+  cursor:url(/src/assets/images/resize-horizontal.cur) 7 0, pointer;
+  background-color:threedhighlight;
+  border-bottom:1px solid threedface;
+  border-top:1px solid threedshadow;
+  height:1px;
+  opacity:0.5;
+  position:absolute;
+  right:0;
+  top:0;
+  width:9999px;
+  z-index:200;
+}
+
+.edge-bottom {
+  border-bottom:1px solid ThreeDShadow;
+}
+
+.edge-top {
+  border-top:1px solid ThreeDShadow;
+}
+
+.document {
+  background:#000 url(http://www.visitlasvegas.com/images/homepage/lights_background.jpg) no-repeat;
+  color:#fff;
+  overflow:scroll;
+}
+
+.document h2{
+  text-align:center;
+}
+.document a{
+  color: #fff;
+}
+.document em.script {
+  font-family:"Monotype Corsiva", "Lucida Handwriting", cursive;
+}
+
+.document strong {
+  font-family:Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-weight:bold;
+}
+
+.document ul.actions {
+background-color:#222222;
+border:1px dashed #444444;
+margin:0 auto;
+padding:25px;
+width:378px;
+list-style-position:inside;
+-moz-border-radius:5px;
+-webkit-border-radius:5px;
+}
+
+.document ul.actions li {
+  padding:5px;
+  font-size:14px;
+}
+
+.document abbr {
+  font-weight: bold;
+  color:yellow;
+}
+
+.chooser abbr {
+  font-weight: bold;
+  color:yellow;
+}
+
+.chooser {
+  -moz-border-radius:10px 10px 0 0;
+  -webkit-border-radius:10px 10px 0 0;
+  background-color:#000000;
+  border-color:#444444 #444444;
+  border-style:solid solid none;
+  border-width:2px 2px medium;
+  bottom:26px;
+  color:#FFFFFF;
+  font-size:20px;
+  height:307px !important;
+  left:60px;
+  opacity:0.90;
+  width:1310px;
+  z-index:1000;
+  position:absolute;
+  display:none;
+}
+
+.chooser ul {
+  float: left;
+  list-style-type:none;
+  border-right: 5px solid #666;
+  list-style-position: inside;
+  margin:0 0 0 5px;
+  padding:0 10px 0 10px;
+  height:100%;
+}
+
+.chooser kbd a{
+  color:#999;
+  text-decoration: none;
+}
+
+.chooser kbd {
+  font-family:Monaco,'Courier New',monospace;
+  font-size:11px;
+  line-height: 20px;
+  position: relative;
+  top: -.3em;
+  color:#999;
+}

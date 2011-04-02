@@ -2,6 +2,7 @@
  * @fileOverview Contains basic functionality for stretching the application
  * layout. regions, scrollbars, tabs, etc.
  */
+ alert('test');
 (function (global) {
 
   var vegas = global.vegas,
