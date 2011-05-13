@@ -1,4 +1,0 @@
-/**
- * @namespace vegas
- */
-vegas = vegas || {};
