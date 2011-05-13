@@ -143,7 +143,7 @@
 //      });
 //    }
 //  };
-  
+
   /**
    * @class Regions
    * @memberOf vegas
@@ -181,3 +181,4 @@
   vegas.module.register('component.js');
 
 }());
+

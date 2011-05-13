@@ -17,6 +17,13 @@
   /** @lends vegas.Region */
   vegas.RegionPair.prototype = {
 
+    /**
+     * Inserts a set of two regions inside of an existing region, they can be
+     * a horizontal or vertical set of regions.
+     * 
+     * @param orientation {string} the orientation of the region pair e.g. horizontal, vertical
+     * @param id {string} used for debugging, keeping track of what region is what.
+     */
     createRegionPair: function (orientation, parentRegion, data) {
 
       var thisRegion = this,
@@ -41,7 +48,7 @@
         ).children(); // Get the elements that we just created
       }
       else if (orientation == 'application'){
-        // Its the application wrapper, do nothing.
+        // Its the application wrapper so its not really a pair... do nothing.
       }
       else {
         console.error("Could not determine region orientation, the function must have a type of 'horizontal' or 'vertical'.");
@@ -110,26 +117,61 @@
      * Remove the Region from its current location.
      */
     remove: function () {
+
       var parentRegion = this.parent();
+
+      debugger;
 
       var sibling = this.sibling();
 
-      // Remove the region by replacing with the sibling regions contents
+      // Remove the region from the object collection (vegas.regions array)
+      vegas.regions.remove(this);
+
+      // Remove the region from the markup by replacing with the parent regions
+      // contents with the the sibling regions contents
       parentRegion.element.html(sibling.element.html());
 
-      this.associateObjectsToElements(parentRegion.element);
+      // Since the sibling region has now become what was the parent region, we
+      // have to adjust a couple of its properties for its data to remain correct.
+      sibling.id = parentRegion.id;
+      sibling.element = parentRegion.element;
+      sibling._parent = sibling.parent(true);
+      sibling._sibling = sibling.sibling(true);
 
     },
 
-    parent: function () {
-      return this._parent;
+    parent: function (fresh) {
+      if (fresh) {
+
+        if (this._parent == false || this.element.hasClass('application')) {
+          this._parent = false;
+          parent = false;
+        }
+        else {
+          var parentElement = this.element.parent();
+          parent = vegas.regions.fromElement(parentElement);
+          this._parent = parent;
+        }
+
+      }
+      else {
+        parent = this._parent;
+      }
+      return parent;
     },
 
-    sibling: function () {
-      return this._sibling;
+    sibling: function (fresh) {
+      if (fresh) {
+        sibling = vegas.regions.fromElement(this.element.siblings());
+        this._sibling = sibling;
+      }
+      else {
+        sibling = this._sibling;
+      }
+      return sibling;
     },
 
-    children: function () {
+    children: function (fresh) {
       return this._children;
     },
 
@@ -218,75 +260,15 @@
         region.removeClass('unmaximized');
       }
 
-      this.element.removeClass('maximized');
-      this.element.removeAttr("style");
+      this.element.removeclass('maximized');
+      this.element.removeattr("style");
 
-      var maximizeButton = this.element.find('button[action=restore]');
-      maximizeButton.attr('action', 'maximize');
-      maximizeButton.removeClass('restore');
-      maximizeButton.addClass('maximize');
+      var maximizebutton = this.element.find('button[action=restore]');
+      maximizebutton.attr('action', 'maximize');
+      maximizebutton.removeclass('restore');
+      maximizebutton.addclass('maximize');
 
       this.maximized = false;
-
-    },
-
-    /**
-     * Inserts a set of two regions inside of an existing region, they can be
-     * a horizontal or vertical set of regions.
-     * 
-     * @param orientation {string} The orientation of the region pair e.g. horizontal, vertical
-     * @param id {string} Used for debugging, keeping track of what region is what.
-     */
-    __DELETE__insertRegionPair: function (orientation) {
-
-      var self = this,
-          regionPair;
-
-      // Inserts the markup for the region inside of the current region, sets
-      // the element to the regionPair variable
-      if (orientation == 'horizontal') {
-        regionPair = this.element.html('<div class="region region-horizontal region-top"></div><div class="region region-horizontal region-bottom"></div>').children();
-      }
-      else if (orientation == 'vertical') {
-        regionPair = this.element.html('<div class="region region-vertical region-left"></div><div class="region region-vertical region-left"></div>').children();
-      }
-      else {
-        console.error("Could not determine region orientation, the function must have a type of 'horizontal' or 'vertical'.");
-      }
-
-      var regionObjects = [],
-          regionObject;
-
-      // Instantiates a new Region and attaches it to the region element
-      regionPair.each(function (i, regionPairElement) {
-
-        regionPairElement = jQuery(regionPairElement);
-
-        regionObject = new vegas.Region({
-          orientation: orientation,
-          element: regionPairElement,
-          _parent: self
-        })
-
-        // @todo, instantiate the object first so we can get its id and attach it to the markup string
-        regionPairElement.attr('id', regionObject.id);
-
-        regionPairElement.data('object', regionObject);
-
-        // Keep track of regions objects in the case that we need to access all regions.
-        vegas.regions.add(regionObject);
-
-        regionObjects.push(regionObject);
-
-      });
-
-      // Let the region family know about eachother
-      regionObjects[0]._sibling = regionObjects[1];
-      regionObjects[1]._sibling = regionObjects[0];
-      this._children = regionObjects;
-
-
-      return regionObjects; // Returns an array containing the region objects created.
 
     },
 
@@ -402,20 +384,32 @@
 
         // User clicked the clicked in the button area area.
         if (target[0].tagName == 'BUTTON' && target.parent().hasClass('buttons')) {
-          var region = target.parents('.region:first').data('object');
+          var region = vegas.regions.fromElement(target.parents('.region:first'));
           var action = target.attr('action');
-          region[action]();
+
+          if (!region) {
+            console.error('shit');
+          }
+
+
+          if (typeof(region[action]) == 'function') {
+            region[action]();
+          }
+          else {
+            console.error('invalid action specified:', action);
+            console.trace();
+          }
         }
 
         var regionObject = false;
 
         if (target.hasClass('region')) {
-            regionObject = target.data('object');
+            regionObject = vegas.regions.fromElement(target);
         }
         else {
           var foundRegion = target.parents('.region:first');
           if (foundRegion.length > 0) {
-            regionObject = foundRegion.data('object');
+            regionObject = vegas.regions.fromElement(foundRegion);
           }
         }
 

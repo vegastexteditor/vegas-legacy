@@ -649,8 +649,10 @@
       for (var i = 0; i < objects.length; i++) {
         object = objects[i];
 
+        object._collectionIndex = position + i;
+
         // add the new item to the specified position
-        this.splice(position + i, 0, object);
+        var res = this.splice(position + i, 0, object);
 
         if (this.trackHash) {
            // add object to hash
@@ -666,6 +668,13 @@
      * @param object {object} The object to find the position of
      */
     getObjectPosition: function (object) {
+
+      // If we already know its position, when we first added it via the add
+      // function then attempt to use that instead of looping
+      if (object._collectionIndex) {
+        return object._collectionIndex;
+      }
+
       var len = this.length;
 
       if (this.trackHash) {
@@ -706,6 +715,7 @@
 
           if (objectPosition !== false) {
             this.splice(objectPosition, 1);
+            console.log(vegas.regions.length);
             if (this.trackHash) {
               delete this.hash[object.id];
             }
@@ -716,6 +726,40 @@
         }
 
       return true;
+
+    },
+
+    fromId: function (collectionId) {
+      return this.hash[collectionId];
+    },
+
+    fromElement: function (element) {
+
+      var objectId;
+
+      if (element.length) {
+        element = element[0];
+      }
+
+      if (!element || !element.id) {
+        console.error('invalid element passed.', (element), (element.id));
+        console.trace();
+        debugger;
+      }
+
+      var split = element.id.split('-');
+
+      if (split.length == 1) {
+        objectId = split[0];
+      }
+      else if (split.length == 2) {
+        objectId = split[1];
+      }
+      else {
+        console.error('Could not get element id');
+      }
+
+      return this.fromId(objectId);
 
     },
 

@@ -294,8 +294,6 @@
 
           });
 
-
-
         },
 
         attachTabCloseEvent: function () {
@@ -304,7 +302,8 @@
             var target = jQuery(e.target);
 
             if (target.parent().hasClass('tab') && target.hasClass('close')) {
-              var componentObject = target.parent().data('object');
+              var tab = target.parent();
+              var componentObject = vegas.components.fromElement(tab);
               componentObject.close();
             }
 
