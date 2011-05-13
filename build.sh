@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # Path definitions
 VAR_APPNAME=vegas
 VAR_PLATFORM=linux
