@@ -121,7 +121,7 @@ body {
 .components {
   background-color: #00FF00;
   float: left;
-  height: 95%;
+  height: 100%;
   width: 100%;
 }
 
@@ -281,6 +281,7 @@ body {
   background-color: WindowFrame;
   width: 100%;
   height: 17px;
+  position:absolute;
 }
 
 /* line 250, src/vegas.scss */
