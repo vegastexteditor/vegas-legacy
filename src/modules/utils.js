@@ -715,7 +715,6 @@
 
           if (objectPosition !== false) {
             this.splice(objectPosition, 1);
-            console.log(vegas.regions.length);
             if (this.trackHash) {
               delete this.hash[object.id];
             }
@@ -727,6 +726,10 @@
 
       return true;
 
+    },
+
+    getElement: function () {
+      return jQuery(document.getElementById(this.id));
     },
 
     fromId: function (collectionId) {

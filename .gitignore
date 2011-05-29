@@ -2,3 +2,5 @@ docs/
 builds/
 application/titanium/Resources/
 src/vegas-modules.min.js
+application/titanium/dist
+application/titanium/timanifest

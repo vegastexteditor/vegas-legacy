@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <ti:app xmlns:ti='http://ti.appcelerator.org'>
 <!-- These values are edited/maintained by Titanium Developer -->
-<id>com.ydmm.vegas</id>
+<id>com.vegasjs.vegas</id>
 <name>vegas</name>
 <version>1.0</version>
-<publisher>ydmm</publisher>
-<url>http://doesdanielhaveawebsite.com/</url>
-<icon>default_app_logo.png</icon>
+<publisher>vegasjs</publisher>
+<url>http://editor.vegasjs.com/</url>
+<icon>icon.png</icon>
 <copyright>2010 by ydmm</copyright>
 <!-- Window Definition - these values can be edited -->
 <window>

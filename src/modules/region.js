@@ -1,5 +1,8 @@
 /**
  * @fileOverview Contains Region related objects and methods
+ *
+ * Regions are physical area's that come in sets of one or two. The root region
+ * is the only region that should at anytime contain a sigular region.
  */
 (function (global) {
   var vegas = global.vegas,
@@ -21,13 +24,15 @@
      * Inserts a set of two regions inside of an existing region, they can be
      * a horizontal or vertical set of regions.
      * 
-     * @param orientation {string} the orientation of the region pair e.g. horizontal, vertical
+     * @param orientation {string} the orientation of the region pair e.g.
+     * horizontal, vertical
+     * @param parentRegion {object} The region which the new region pair should
+     * be inserted into
      * @param id {string} used for debugging, keeping track of what region is what.
      */
     createRegionPair: function (orientation, parentRegion, data) {
 
-      var thisRegion = this,
-          regionElementPair,
+      var regionElementPair,
           regionObjectPair = [];
 
       regionObjectPair[0] = new vegas.Region(orientation, parentRegion, data, true);
@@ -36,13 +41,13 @@
       // Inserts the markup for the region inside of the current region, sets
       // the element to the regionPair variable
       if (orientation == 'horizontal') {
-        regionElementPair = parentRegion.element.html(
+        regionElementPair = parentRegion.getElement().html(
         '<div class="region region-horizontal region-top" id="' + regionObjectPair[0].id + '"></div>' + 
         '<div class="region region-horizontal region-bottom" id="' + regionObjectPair[1].id + '"></div>'
         ).children(); // Get the elements that we just created
       }
       else if (orientation == 'vertical') {
-        regionElementPair = parentRegion.element.html(
+        regionElementPair = parentRegion.getElement().html(
           '<div class="region region-vertical region-left" id="' + regionObjectPair[0].id + '"></div>' + 
           '<div class="region region-vertical region-left" id="' + regionObjectPair[1].id + '"></div>'
         ).children(); // Get the elements that we just created
@@ -59,6 +64,7 @@
       regionObjectPair[1].element = regionElementPair.eq(1);
 
       // Associate the elements with the region objects
+      // @depreciated implimentation, use hash id's for lookup
       regionElementPair.eq(0).data('object', regionObjectPair[0]);
       regionElementPair.eq(1).data('object', regionObjectPair[1]);
 
@@ -71,10 +77,11 @@
 
       parentRegion._children = regionObjectPair;
 
-      // Keep track of regions objects in the likley case that we need to access all regions.
+      // Keep track of regions objects in the likley case that we need to access
+      // all regions.
       vegas.regions.add(regionObjectPair);
-
-      return regionObjectPair;  // Returns an array containing the region objects created.
+      // Returns an array containing the region objects created.
+      return regionObjectPair;
 
     }
   };
@@ -113,36 +120,57 @@
       return this.contents[0];
     },
 
+    getElement: function () {
+      return jQuery(document.getElementById(this.id));
+    },
+
     /**
      * Remove the Region from its current location.
      */
     remove: function () {
 
-      var parentRegion = this.parent();
+      var parentRegion = this.parent(true);
 
-      var sibling = this.sibling();
+      var siblingRegion = this.sibling(true);
+
+      // Remove the sibling region from the markup by replacing with the parent regions
+      // contents with the the sibling regions contents
+      parentRegion.getElement().html(siblingRegion.getElement().html());
 
       // Remove the region from the object collection (vegas.regions array)
       vegas.regions.remove(this);
 
-      // Remove the region from the markup by replacing with the parent regions
-      // contents with the the sibling regions contents
-      parentRegion.element.html(sibling.element.html());
+      /*
+      -- 95C31493_8D91_46B9_B310_EC7F72D4BC93--   -- 31EABF16_A1EE_4EEC_A0AC_5BAD535400C2 --
+      C9DE9B06_FB64_4FC2_9E28_DAEE17A01AAA        992C9827_5174_40AB_8B73_E2A2B0501237
+      246E717B_17A8_4267_899A_B000C851C958        983C539C_C0A5_4959_B259_617BD02D21A8
+      */
 
-      var newParentRegion = sibling;
+      // Would then become
+
+      /*
+      -- 246E717B_17A8_4267_899A_B000C851C958--   -- 31EABF16_A1EE_4EEC_A0AC_5BAD535400C2 --
+                                                  992C9827_5174_40AB_8B73_E2A2B0501237
+                                                  983C539C_C0A5_4959_B259_617BD02D21A8
+      */
 
       // Since the sibling region has now become what was the parent region, we
       // have to adjust a couple of its properties for its data to remain correct.
-      newParentRegion.id = parentRegion.id;
-      newParentRegion.element = parentRegion.element;
-      newParentRegion._parent = sibling.parent(true);
-      newParentRegion._sibling = sibling.sibling(true);
+
+      parentRegion.getElement().attr('id', siblingRegion.id);
+
+      parentRegion.id = siblingRegion.id;
+
+      parentRegion._parent = parentRegion.parent(true);
+
+      parentRegion._sibling = parentRegion.sibling(true);
 
       // Since the markup has been reinserted from the parent, the element
       // references in the objects are now stale... refresht them.
-      this.associateElementsToObjects(sibling.element);
 
-      var components = sibling.components,
+      // this.associateElementsToObjects(siblingRegion.element);
+
+      var components = siblingRegion.components,
           componentsLen = components.length,
           component;
 
@@ -152,19 +180,20 @@
         parentRegion.components[i] = component;
       }
 
-      parentRegion.components = sibling.components;
+      parentRegion.components = siblingRegion.components;
 
     },
 
     parent: function (fresh) {
+      var parent;
       if (fresh) {
 
-        if (this._parent == false || this.element.hasClass('application')) {
+        if (this._parent == false || this.getElement().hasClass('application')) {
           this._parent = false;
           parent = false;
         }
         else {
-          var parentElement = this.element.parent();
+          var parentElement = this.getElement().parent();
           parent = vegas.regions.fromElement(parentElement);
           this._parent = parent;
         }
@@ -180,9 +209,9 @@
       var siblings,
           sibling;
       if (fresh) {
-        siblings = this.element.siblings();
+        siblings = this.getElement().siblings();
         if (siblings.length) {
-          sibling = vegas.regions.fromElement(this.element.siblings());
+          sibling = vegas.regions.fromElement(this.getElement().siblings());
           this._sibling = sibling;
         }
         else {
@@ -216,7 +245,7 @@
       }
 
       // Create a new Component empty edit area component for the second slot
-      component = new vegas.EditArea({title: 'untitled'}, newRegions[1]);
+      component = new vegas.EditArea({title: 'untitled ' + Math.floor(Math.random() * 1000)}, newRegions[1]);
 
       component._children = newRegions;
 
@@ -239,7 +268,7 @@
       }
 
       // Create a new Component empty edit area component for the second slot
-      component = new vegas.EditArea({title: 'untitled'}, newRegions[1]);
+      component = new vegas.EditArea({title: 'untitled ' + Math.floor(Math.random() * 1000)}, newRegions[1]);
 
       component._children = newRegions;
 
@@ -257,20 +286,21 @@
           region;
 
       for (var i = 0; i < regionsLen; i++) {
-        region = regions[i].element;
+        region = regions[i].getElement();
         region.addClass('unmaximized');
       }
 
-      this.element.addClass('maximized');
+      this.getElement().addClass('maximized');
 
-      this.element.width(applicationRegion.element.width());
-      this.element.height(applicationRegion.element.height());
+      this.getElement().width(applicationRegion.getElement().width());
+      this.getElement().height(applicationRegion.getElement().height());
 
-      var maximizeButton = this.element.find('button[action=maximize]');
+      var maximizeButton = this.getElement().find('button[action=maximize]');
       maximizeButton.attr('action', 'restore');
       maximizeButton.removeClass('maximize');
       maximizeButton.addClass('restore');
 
+      this.getElement().find('button.splitv,button.splith').hide();
 
       this.maximized = true;
 
@@ -284,17 +314,19 @@
           region;
 
       for (var i = 0; i < regionsLen; i++) {
-        region = regions[i].element;
+        region = regions[i].getElement();
         region.removeClass('unmaximized');
       }
 
-      this.element.removeclass('maximized');
-      this.element.removeattr("style");
+      this.getElement().removeClass('maximized');
+      this.getElement().removeAttr("style");
 
-      var maximizebutton = this.element.find('button[action=restore]');
+      var maximizebutton = this.getElement().find('button[action=restore]');
       maximizebutton.attr('action', 'maximize');
-      maximizebutton.removeclass('restore');
-      maximizebutton.addclass('maximize');
+      maximizebutton.removeClass('restore');
+      maximizebutton.addClass('maximize');
+
+      this.getElement().find('button.splitv,button.splith').show();
 
       this.maximized = false;
 
@@ -302,21 +334,27 @@
 
     associateElementsToObjects: function (wrapper) {
 
+      console.error('obsolete?');
+      debugger;
+
       wrapper = jQuery(wrapper);
 
       var regionElements = wrapper.find('.region');
       var componentElements = wrapper.find('.component');
 
       for (var i = 0; i < regionElements.length; i++) {
-        vegas.regions.hash[regionElements[i].id].element = jQuery(document.getElementById(regionElements[i].id));
+        vegas.regions.hash[regionElements[i].id].getElement() = jQuery(document.getElementById(regionElements[i].id));
       }
 
       for (var i = 0; i < componentElements.length; i++) {
-        vegas.components.hash[componentElements[i].id].element = jQuery(document.getElementById(componentElements[i].id));
+        vegas.components.hash[componentElements[i].id].getElement() = jQuery(document.getElementById(componentElements[i].id));
       }
     },
 
     associateObjectsToElements: function (wrapper) {
+
+      console.error('obsolete?');
+      debugger;
 
       // Since the sibling regions contents may contain any number of components or regions
       // we need to do re-associate objects to elements and elements to objects.
@@ -331,7 +369,7 @@
         regionId = regionElement[0].id;
         regionObject = vegas.regions.hash[regionId];
         // reattach the elements that are stored with the object as well
-        regionObject.element = regionElement;
+        regionObject.getElement() = regionElement;
         regionObject._parent = regionElement.parents('div.region:first').data('object');
         regionObject._sibling = regionElement.siblings().data('object');
 
@@ -351,7 +389,7 @@
           componentId = componentElement[0].id;
           componentObject = vegas.components.hash[componentId];
           // reattach the elements that are stored with the object as well
-          componentObject.element = componentElement;
+          componentObject.getElement() = componentElement;
           // re-attach the objects to the element via the data function.
           componentElement.data('object', componentObject);
           componentObject.getTabElement().data('object', componentObject);

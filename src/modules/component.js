@@ -33,6 +33,10 @@
         this.id = vegas.utils.getUniqueId();
       },
 
+      getElement: function () {
+        return jQuery(document.getElementById(this.id));
+      },
+
       /**
        * Insert a component inside of a region, creates the markup and instantiates
        * the component object instance.
@@ -51,13 +55,13 @@
 
         // Since regions can contain other regions OR components, we don't want to
         // create the component/tabs wrapper elements if its going to have a region
-        if (region.components.length < 1) {
+        if (region.components.length < 2) {
           this.insertComponentContainer(region);
         }
 
         // find wrapper elements to insert component elements into
-        var componentsWrapper = region.element.find('.components');
-        var tabsWrapper = region.element.find('.tabs');
+        var componentsWrapper = region.getElement().find('.components');
+        var tabsWrapper = region.getElement().find('.tabs');
 
         // Insert the components into the wrapper elements
         var componentElement = componentsWrapper.append('<div class="component component-' + component.type + '" id="' + component.id + '">' + component.componentStructure() + '</div>').find('.component:last');
@@ -89,12 +93,15 @@
       insertComponentContainer: function (region) {
         var buttonMarkup = '<div class="buttons"><button class="splitv" action="splitv"></button><button class="splith" action="splith"></button><button class="maximize" action="maximize"></button></div>';
         var componentsWrapperMarkup = '<div class="regionPane"><div class="tabs"></div>' + buttonMarkup + '</div><div class="components"></div>';
-        region.element.html(componentsWrapperMarkup);
+        region.getElement().html(componentsWrapperMarkup);
       },
 
       close: function () {
+        // Remove the tab
         this.getTabElement().remove();
-        jQuery(this.element).remove();
+
+        // Remove the component element
+        this.getElement().remove();
 
         var components = this.region.components,
             componentsLen = components.length,
@@ -109,7 +116,9 @@
             }
         }
 
-        if (this.region.components.length <= 0) {
+        if (this.region.components.length <= 1) {
+          // If the region has no more components
+          console.log('remove region');
           this.region.remove();
         }
 
