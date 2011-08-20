@@ -11,7 +11,6 @@
       initObjects: [],
 
       init: function () {
-        
 
         var initObjects = this.initObjects,
             initObjectsLen = initObjects.length,
@@ -27,7 +26,8 @@
 
       },
 
-      register: function (initObject) {
+      register: function (initObject, name) {
+        console.log(name);
         this.initObjects.push(initObject);
       }
 

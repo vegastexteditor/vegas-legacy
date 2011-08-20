@@ -671,9 +671,9 @@
 
       // If we already know its position, when we first added it via the add
       // function then attempt to use that instead of looping
-      if (object._collectionIndex) {
-        return object._collectionIndex;
-      }
+      //if (object._collectionIndex) {
+      //  return object._collectionIndex;
+      //}
 
       var len = this.length;
 
@@ -698,7 +698,7 @@
     /**
      * Remove object(s) from the collection
      *
-     * @param objects {array||object} An array of objects, or an object that is to be removed
+     * @param objects {array||object||String} An array of objects, or an object that is to be removed
      */
     remove: function (objects) {
       var objectPosition,
@@ -730,6 +730,10 @@
 
     getElement: function () {
       return jQuery(document.getElementById(this.id));
+    },
+    
+    get: function () {
+      return this.fromId.apply(this, arguments);
     },
 
     fromId: function (collectionId) {

@@ -3,14 +3,19 @@
  *
  * Regions are physical area's that come in sets of one or two. The root region
  * is the only region that should at anytime contain a sigular region.
+ *
+ * Regions are rendered as divs and act as containers for components. The
+ * reason they exist are to be able to provide recursive split views both
+ * vertically and horizontally.
  */
 (function (global) {
   var vegas = global.vegas,
       utils = vegas.utils;
+
   /**
    * @class RegionPair
    * @memberOf vegas
-   * @description Creates a set of Region that will be drawn to the screen
+   * @description Creates a set of two Region that will be drawn to the screen
    */
   vegas.RegionPair = function (orientation, parentRegion, data) {
     utils.makeObject(this, arguments);
@@ -23,7 +28,7 @@
     /**
      * Inserts a set of two regions inside of an existing region, they can be
      * a horizontal or vertical set of regions.
-     * 
+     *
      * @param orientation {string} the orientation of the region pair e.g.
      * horizontal, vertical
      * @param parentRegion {object} The region which the new region pair should
@@ -35,8 +40,14 @@
       var regionElementPair,
           regionObjectPair = [];
 
-      regionObjectPair[0] = new vegas.Region(orientation, parentRegion, data, true);
-      regionObjectPair[1] = new vegas.Region(orientation, parentRegion, data, true);
+      // Instantiate two single regions, letting it know about the parent region and its
+      // position within that parent region
+      regionObjectPair[0] = new vegas.Region(orientation, parentRegion, data, 0);
+      regionObjectPair[1] = new vegas.Region(orientation, parentRegion, data, 1);
+
+      // Whether or not the region pair has "gutter"... gutter is only displayed
+      // in between two regions.
+      var hasGutter = false;
 
       // Inserts the markup for the region inside of the current region, sets
       // the element to the regionPair variable
@@ -45,41 +56,53 @@
         '<div class="region region-horizontal region-top" id="' + regionObjectPair[0].id + '"></div>' + 
         '<div class="region region-horizontal region-bottom" id="' + regionObjectPair[1].id + '"></div>'
         ).children(); // Get the elements that we just created
+
+        hasGutter = true;
+
       }
       else if (orientation == 'vertical') {
         regionElementPair = parentRegion.getElement().html(
           '<div class="region region-vertical region-left" id="' + regionObjectPair[0].id + '"></div>' + 
           '<div class="region region-vertical region-left" id="' + regionObjectPair[1].id + '"></div>'
         ).children(); // Get the elements that we just created
+
+        hasGutter = true;
+
       }
       else if (orientation == 'application'){
         // Its the application wrapper so its not really a pair... do nothing.
+        console.warn('should this even be called?');
       }
       else {
         console.error("Could not determine region orientation, the function must have a type of 'horizontal' or 'vertical'.");
       }
 
-      // Associate the region objects with the elements
+      // Associate the region objects with the region elements
       regionObjectPair[0].element = regionElementPair.eq(0);
       regionObjectPair[1].element = regionElementPair.eq(1);
 
-      // Associate the elements with the region objects
-      // @depreciated implimentation, use hash id's for lookup
-      regionElementPair.eq(0).data('object', regionObjectPair[0]);
-      regionElementPair.eq(1).data('object', regionObjectPair[1]);
-
       // Let the region family know about eachother
       regionObjectPair[0]._parent = parentRegion;
-      regionObjectPair[0]._sibling = regionObjectPair[1];
-
       regionObjectPair[1]._parent = parentRegion;
+
+      regionObjectPair[0]._sibling = regionObjectPair[1];
       regionObjectPair[1]._sibling = regionObjectPair[0];
 
       parentRegion._children = regionObjectPair;
 
+      // If this region has a gutter (its horizontal / vertical)
+      if (hasGutter) {
+        // Then create a gutter via the gutter class :)
+        var gutter = new vegas.Gutter(orientation, regionObjectPair);
+        // Let both regions know about the gutter.
+        regionObjectPair[0]._gutter = gutter;
+        regionObjectPair[1]._gutter = gutter;
+      }
+
       // Keep track of regions objects in the likley case that we need to access
       // all regions.
       vegas.regions.add(regionObjectPair);
+
       // Returns an array containing the region objects created.
       return regionObjectPair;
 
@@ -89,26 +112,31 @@
   /**
    * @class Region
    * @memberOf vegas
-   * @description Creates a Region that will be drawn to the screen
+   * @description Creates a Region that will be drawn to the screen, this
+   * should not be used directly. It should only be used by the RegionPair
+   * class since regions can only come in pairs.
    */
-  vegas.Region = function (orientation, parentRegion, data, isPair) {
+  vegas.Region = function (orientation, parentRegion, data, order) {
     utils.makeObject(this, arguments);
     vegas.utils.extend(this, data);
-    this.init(orientation, parentRegion, data, isPair);
+    this.init(orientation, parentRegion, data, order);
   };
 
   /** @lends vegas.Region */
   vegas.Region.prototype = {
 
-    init: function (orientation, parentRegion, data, isPair) {
+    init: function (orientation, parentRegion, data, order) {
 
       this.orientation = orientation;
       this._parent = parentRegion;
+      this._children = [];
       this.id = utils.getUniqueId();
       this.entity = 'Region';
       this.components = [];
       this.hasComponents = false;
       this.maximized = false;
+      this.splittingEnabled = true;
+      this.order = order;
 
     },
 
@@ -124,51 +152,120 @@
       return jQuery(document.getElementById(this.id));
     },
 
+    isRoot: function () {
+      return this.getElement().hasClass('application');
+    },
+
+    setWidth: function () {
+
+    },
+
+    setHeight: function (height) {
+
+      var thisElement = this.getElement();
+
+      debugger;
+
+      if (height == undefined) {
+        if (this.isRoot()) {
+          height = window.innerHeight;
+        }
+        else {
+          if (this.orientation == 'horizontal') {
+            height = thisElement.parent().height() / 2
+          }
+          else { // vertical
+            height = thisElement.parent.height();
+          }
+        }
+      }
+
+      // Make the height of the wrapper reach the height of the full screen
+      thisElement[0].style.cssText += 'height:' + height + 'px !important;';
+    },
+
+    updateFamilyRefs: function () {
+      // Refresh refrences
+      this._parent = this.parent(true);
+      this._sibling = this.sibling(true);
+    },
+
+    become: function (whatToBecome) {
+
+      this.getElement().html(whatToBecome.getElement().html());
+
+      this.getElement().attr('id', whatToBecome.id);
+
+      this.id = whatToBecome.id;
+
+      // Since the markup has been reinserted from the parent, the element
+      // references in the objects are now stale... refresht them.
+
+      var components = whatToBecome.components,
+          componentsLen = components.length,
+          component;
+
+      for (var i = 0; i < componentsLen; i++) {
+        component = components[i];
+        component.element = jQuery(document.getElementById(component.id));
+        this.components[i] = component;
+      }
+
+      this.components = whatToBecome.components;
+
+      // Refresh refrences
+      this.updateFamilyRefs();
+
+    },
+
     /**
      * Remove the Region from its current location.
      */
     remove: function () {
 
-      var parentRegion = this.parent(true);
+      if (this.id == this.getApplicationRegion().id){
 
-      var siblingRegion = this.sibling(true);
+        this.disableSplitting();
 
-      // Remove the sibling region from the markup by replacing with the parent regions
-      // contents with the the sibling regions contents
-      parentRegion.getElement().html(siblingRegion.getElement().html());
+        // Components should already be empty! Whats going on here?
+        // @todo: this is rigged. 
+        this.components = [];
+        // end rigging.
 
-      // Remove the region from the object collection (vegas.regions array)
+        return false;
+      }
+
+      try {
+      var parentRegion = this.parent();
+
+      var siblingRegion = this.sibling();
+      }
+      catch (e) {
+        debugger;
+      }
+
+      // Remove the region element, this should be pointless code since the
+      // replacement of the parent region with the sibling region will remove
+      // the region inherantly
+      //this.getElement().remove()
+
+      debugger;
+
+      // Remove the region from the collection
       vegas.regions.remove(this);
 
-      /*
-      -- 95C31493_8D91_46B9_B310_EC7F72D4BC93--   -- 31EABF16_A1EE_4EEC_A0AC_5BAD535400C2 --
-      C9DE9B06_FB64_4FC2_9E28_DAEE17A01AAA        992C9827_5174_40AB_8B73_E2A2B0501237
-      246E717B_17A8_4267_899A_B000C851C958        983C539C_C0A5_4959_B259_617BD02D21A8
-      */
+      // The reference to the parent region is now referencing the sibling region
+      vegas.regions.hash[parentRegion.id] = siblingRegion;
 
-      // Would then become
+      // Since the parent region is referencing the sibling region
+      // the remove the original reference to the sibling region
+      vegas.regions.remove(siblingRegion);
 
-      /*
-      -- 246E717B_17A8_4267_899A_B000C851C958--   -- 31EABF16_A1EE_4EEC_A0AC_5BAD535400C2 --
-                                                  992C9827_5174_40AB_8B73_E2A2B0501237
-                                                  983C539C_C0A5_4959_B259_617BD02D21A8
-      */
-
-      // Since the sibling region has now become what was the parent region, we
-      // have to adjust a couple of its properties for its data to remain correct.
-
-      parentRegion.getElement().attr('id', siblingRegion.id);
-
-      parentRegion.id = siblingRegion.id;
-
-      parentRegion._parent = parentRegion.parent(true);
-
-      parentRegion._sibling = parentRegion.sibling(true);
+      // Now Replace the parent region with the sibling regions contents
+      parentRegion.getElement().html(siblingRegion.getElement().html());
 
       // Since the markup has been reinserted from the parent, the element
       // references in the objects are now stale... refresht them.
-
-      // this.associateElementsToObjects(siblingRegion.element);
 
       var components = siblingRegion.components,
           componentsLen = components.length,
@@ -182,46 +279,48 @@
 
       parentRegion.components = siblingRegion.components;
 
+      // Refresh refrences
+      parentRegion.updateFamilyRefs();
+
     },
 
-    parent: function (fresh) {
-      var parent;
-      if (fresh) {
+    parent: function () {
 
-        if (this._parent == false || this.getElement().hasClass('application')) {
-          this._parent = false;
-          parent = false;
-        }
-        else {
-          var parentElement = this.getElement().parent();
-          parent = vegas.regions.fromElement(parentElement);
-          this._parent = parent;
-        }
+      var parent = this.getElement().parent();
 
+      if (parent[0] == document.body) {
+        return false;
       }
-      else {
-        parent = this._parent;
+
+      var parentId = parent[0].id;
+
+      for (var i = 0; i < vegas.regions.length; i++) {
+        if (vegas.regions[i].id == parentId) {
+          return vegas.regions[i];
+        }
       }
-      return parent;
+
+      return false;
     },
 
-    sibling: function (fresh) {
-      var siblings,
-          sibling;
-      if (fresh) {
-        siblings = this.getElement().siblings();
-        if (siblings.length) {
-          sibling = vegas.regions.fromElement(this.getElement().siblings());
-          this._sibling = sibling;
-        }
-        else {
-          this._sibling = false;
+    sibling: function () {
+
+      var siblings = this.getElement().siblings();
+
+      if (!siblings.length) {
+        return false;
+      }
+
+      var siblingId = siblings[0].id;
+
+      for (var i = 0; i < vegas.regions.length; i++) {
+        if (vegas.regions[i].id == siblingId) {
+          return vegas.regions[i];
         }
       }
-      else {
-        sibling = this._sibling;
-      }
-      return sibling;
+
+      return false;
+
     },
 
     children: function (fresh) {
@@ -232,6 +331,11 @@
      * Splits a region vertically
      */
     splitv: function () {
+
+      if (vegas.regions[0].getElement().length == 0) {
+        debugger;
+      }
+
       var components = this.components;
       this.components = []; // remove The components from the region object.
 
@@ -248,6 +352,10 @@
       component = new vegas.EditArea({title: 'untitled ' + Math.floor(Math.random() * 1000)}, newRegions[1]);
 
       component._children = newRegions;
+
+      if (vegas.regions[0].getElement().length == 0) {
+        debugger;
+      }
 
     },
 
@@ -278,6 +386,20 @@
       return vegas.regions[0];
     },
 
+    disableSplitting: function () {
+      if (this.splittingEnabled) {
+        this.getElement().find('button.splitv,button.splith').hide();
+        this.splittingEnabled = false;
+      }
+    },
+
+    enableSplitting: function () {
+      if (!this.splittingEnabled) {
+        this.getElement().find('button.splitv,button.splith').show();
+        this.splittingEnabled = true;
+      }
+    },
+
     maximize: function () {
       var applicationRegion = this.getApplicationRegion();
 
@@ -300,7 +422,7 @@
       maximizeButton.removeClass('maximize');
       maximizeButton.addClass('restore');
 
-      this.getElement().find('button.splitv,button.splith').hide();
+      this.disableSplitting();
 
       this.maximized = true;
 
@@ -326,79 +448,10 @@
       maximizebutton.removeClass('restore');
       maximizebutton.addClass('maximize');
 
-      this.getElement().find('button.splitv,button.splith').show();
+      this.enableSplitting();
 
       this.maximized = false;
 
-    },
-
-    associateElementsToObjects: function (wrapper) {
-
-      console.error('obsolete?');
-      debugger;
-
-      wrapper = jQuery(wrapper);
-
-      var regionElements = wrapper.find('.region');
-      var componentElements = wrapper.find('.component');
-
-      for (var i = 0; i < regionElements.length; i++) {
-        vegas.regions.hash[regionElements[i].id].getElement() = jQuery(document.getElementById(regionElements[i].id));
-      }
-
-      for (var i = 0; i < componentElements.length; i++) {
-        vegas.components.hash[componentElements[i].id].getElement() = jQuery(document.getElementById(componentElements[i].id));
-      }
-    },
-
-    associateObjectsToElements: function (wrapper) {
-
-      console.error('obsolete?');
-      debugger;
-
-      // Since the sibling regions contents may contain any number of components or regions
-      // we need to do re-associate objects to elements and elements to objects.
-      var regions = wrapper.find('div.region').andSelf(),
-          regionsLen = regions.length,
-          regionElement,
-          regionId,
-          regionObject;
-
-      for (var i = 0; i < regionsLen; i++) {
-        regionElement = jQuery(regions[i]);
-        regionId = regionElement[0].id;
-        regionObject = vegas.regions.hash[regionId];
-        // reattach the elements that are stored with the object as well
-        regionObject.getElement() = regionElement;
-        regionObject._parent = regionElement.parents('div.region:first').data('object');
-        regionObject._sibling = regionElement.siblings().data('object');
-
-        // We are going to repopulate the components array.
-        regionObject.components = [];
-        // re-attach the objects to the element via the data function.
-        regionElement.data('object', regionObject);
-
-        var components = regionElement.find('div.component'),
-            componentsLen = components.length,
-            componentElement,
-            componentId,
-            componentObject;
-
-        for (var j = 0; j < componentsLen; j++) {
-          componentElement = jQuery(components[j]);
-          componentId = componentElement[0].id;
-          componentObject = vegas.components.hash[componentId];
-          // reattach the elements that are stored with the object as well
-          componentObject.getElement() = componentElement;
-          // re-attach the objects to the element via the data function.
-          componentElement.data('object', componentObject);
-          componentObject.getTabElement().data('object', componentObject);
-
-          // we also need to update the components array in the containing region.
-          regionObject.components.push(componentObject);
-        }
-
-      }
     },
 
     /*
@@ -548,6 +601,20 @@
         }
 
       });
+    },
+
+    getPanes: function () {
+      var regions = vegas.regions;
+
+      var childlessRegions = [];
+
+      for (var i = 0; i < regions.length; i++) {
+        if (regions[i]._children.length == 0) {
+          childlessRegions.push(regions[i]);
+        }
+      }
+
+      return childlessRegions;
     }
 
   };

@@ -114,12 +114,11 @@ body {
   float: left;
   overflow: hidden;
   position: relative;
-  outline: 1px solid buttonshadow;
 }
 
 /* line 106, src/vegas.scss */
 .components {
-  background-color: #00FF00;
+  background-color: background;
   float: left;
   height: 100%;
   width: 100%;
@@ -289,6 +288,41 @@ buttons {
   float: left;
 }
 
+.grip{
+  position:absolute;
+  background-color:#00ff00;
+  z-index: 2;
+  opacity: .2;
+}
+
+.gripTop{
+  width:4000px;
+  height:2px;
+  top:0;
+  left:0;
+}
+
+.gripRight{
+  width:2px;
+  height:4000px;
+  top:0;
+  right:0;
+}
+
+.gripBottom{
+  width:4000px;
+  height:2px;
+  bottom:0;
+  left:0;
+}
+
+.gripLeft{
+  width:2px;
+  height:4000px;
+  top:0;
+  left:0;
+}
+
 /* line 254, src/vegas.scss */
 .edge-bottom-grip, .edge-bottom-grip {
   cursor: url(/src/assets/images/resize-horizontal.cur) 7 0, pointer;
@@ -417,4 +451,19 @@ buttons {
   position: relative;
   top: -0.3em;
   color: #999;
+}
+
+.gutter {
+  position:absolute;
+  background-color:#ff0000;
+  width:25px;
+  height:25px;
+}
+
+.gutter-horizontal {
+  cursor:ns-resize;
+}
+
+.gutter-vertical{
+  cursor:ew-resize;
 }

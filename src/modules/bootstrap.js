@@ -33,6 +33,7 @@
       // Container modules
       'modules/view.js',
       'modules/region.js',
+      'modules/gutter.js',
       'modules/tab.js',
       'modules/component.js',
 

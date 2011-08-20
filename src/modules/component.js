@@ -92,7 +92,7 @@
 
       insertComponentContainer: function (region) {
         var buttonMarkup = '<div class="buttons"><button class="splitv" action="splitv"></button><button class="splith" action="splith"></button><button class="maximize" action="maximize"></button></div>';
-        var componentsWrapperMarkup = '<div class="regionPane"><div class="tabs"></div>' + buttonMarkup + '</div><div class="components"></div>';
+        var componentsWrapperMarkup = '<div class="regionPane"><div class="tabs"></div>' + buttonMarkup + '</div><div class="components"></div></div>';
         region.getElement().html(componentsWrapperMarkup);
       },
 
@@ -119,7 +119,9 @@
         if (this.region.components.length <= 1) {
           // If the region has no more components
           console.log('remove region');
+          console.log('vegas.regions[0].getElement()', vegas.regions[0].getElement());
           this.region.remove();
+          console.log('vegas.regions[0].getElement()', vegas.regions[0].getElement());
         }
 
       },

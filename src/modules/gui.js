@@ -118,6 +118,9 @@
 
           var applicationWrapper = jQuery(document.body).html('<div class="application region" id="' + regionObject.id + '"></div>').children();
 
+          // Make the height of the wrapper reach the height of the full screen
+          applicationWrapper[0].style.cssText += 'height:' + window.innerHeight + 'px !important;';
+
           regionObject.element = applicationWrapper;
 
           applicationWrapper.data('object', regionObject);
