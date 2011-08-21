@@ -140,7 +140,41 @@
                 // Move the top of the vertical gutter, to the top of the first horizontal parent.
                 region.gutter.element.css('top', firstHorizRegion.offset().top);
                 // Resize the the vertical gutter to the height of the first horizontal parent.
-                region.gutter.element.height(region.element.parent().height());
+
+                var parent = region.element.parents('.region-horizontal:first');
+
+                if (gutter.regionPair[0].id === parent.attr('id')) {
+                  region.gutter.element.height(region.element.parent().height());
+                  console.log('even');
+                }
+                else {
+                  console.log('odd');
+                  var parent = region.element.parent();
+
+                  // Height of the first region pair
+                  var regionPair1Height = region.parent().element.height();
+
+                  // Height of the second in the region pair
+                  var regionPair2Height = region.parent().sibling().element.height()
+
+                  // Total height of the pair thats about to get resized
+                  var regionPairTotalHeight = parent.height();
+
+                  // Ratio 
+                  var omg = regionPairTotalHeight / (regionPair1Height + regionPair2Height);
+
+                  region.gutter.element.height(omg * regionPair1Height);
+
+                  var val = omg * regionPair1Height;
+
+                  console.log(val);
+
+                  if (val === 0) {
+                    debugger;
+                  }
+
+                }
+
 
               }
 
