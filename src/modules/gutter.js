@@ -115,7 +115,7 @@
           // The region thats below the gutter that was dragged
           var bottom = gutter.regionPair[1].element;
           // Both regions that are inbetween the gutter
-          var regionPairElements = top.add(bottom);
+          var regionPairElements = bottom.add(top);//top.add(bottom);
 
           // Resize the top region of the gutter
           top.height(top.height() - offset.top);
@@ -130,51 +130,31 @@
 
             if (region.orientation == 'vertical') { // Regions that are side by side
 
-              // Find the first parent of the region pair that is horizontal
-              var firstHorizRegion = region.element.parents('.region-horizontal:first');
-
-              // Make the size of this region to the height of the first horizontal pair
-              region.element.height(firstHorizRegion.height());
+              var parent = region.element.parents('.region-horizontal:first');
 
               if (region.order == 1) { // Only do this once per region pair.
                 // Move the top of the vertical gutter, to the top of the first horizontal parent.
-                region.gutter.element.css('top', firstHorizRegion.offset().top);
+                region.gutter.element.css('top', parent.offset().top);
                 // Resize the the vertical gutter to the height of the first horizontal parent.
 
-                var parent = region.element.parents('.region-horizontal:first');
-
+                var res;
                 if (gutter.regionPair[0].id === parent.attr('id')) {
-                  region.gutter.element.height(region.element.parent().height());
-                  console.log('even');
+                  res = region.element.parent().height();
                 }
                 else {
-                  console.log('odd');
-                  var parent = region.element.parent();
-
-                  // Height of the first region pair
-                  var regionPair1Height = region.parent().element.height();
-
-                  // Height of the second in the region pair
-                  var regionPair2Height = region.parent().sibling().element.height()
-
-                  // Total height of the pair thats about to get resized
-                  var regionPairTotalHeight = parent.height();
-
-                  // Ratio 
-                  var omg = regionPairTotalHeight / (regionPair1Height + regionPair2Height);
-
-                  region.gutter.element.height(omg * regionPair1Height);
-
-                  var val = omg * regionPair1Height;
-
-                  console.log(val);
-
-                  if (val === 0) {
-                    debugger;
-                  }
-
+                  // I don't even know what i'm doing anymore...
+                  // @todo: document when in right frame of mind.
+                  var parentObj = vegas.regions.fromElement(parent);
+                  var region1Height = parentObj.element.height();
+                  var region2Height = parentObj.sibling().element.height();
+                  var newHeight = parentObj.parent().element.height();
+                  var ratio = newHeight / (region1Height + region2Height);
+                  res = ratio * region1Height;
                 }
 
+                region.gutter.element.height(res);
+
+                region.element.height(res);
 
               }
 
@@ -191,12 +171,10 @@
 
                 region1Height = region.element.height();
                 region2Height = region.sibling().element.height();
-
                 ratio = region.parent().element.height() / (region1Height + region2Height)
 
                 region.element.height(ratio * region1Height);
                 region.sibling().element.height(ratio * region2Height);
-
 
                 region.gutter.element.css('top', region.element.offset().top - GUTTER_SIZE);
               }
