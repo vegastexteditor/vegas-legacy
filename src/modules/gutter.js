@@ -114,40 +114,57 @@
           var top = gutter.regionPair[0].element;
           // The region thats below the gutter that was dragged
           var bottom = gutter.regionPair[1].element;
+          // Both regions that are inbetween the gutter
+          var regionPairElements = top.add(bottom);
 
+          // Resize the top region of the gutter
           top.height(top.height() - offset.top);
 
+          // Resize the bottom region of the gutter
           bottom.height(bottom.height() + offset.top);
 
-          top.find('.region').each(function (i, e) {
+          // Loop through all the regions within the region pair
+          regionPairElements.find('.region').each(function (i, e) {
 
             var region = vegas.regions.fromElement(e);
 
-            if (region.orientation == 'vertical') {
+            if (region.orientation == 'vertical') { // Regions that are side by side
 
-              region.element.height(region.element.height());
+              // Find the first parent of the region pair that is horizontal
+              var firstHorizRegion = region.element.parents('.region-horizontal:first');
 
-              if (region.order == 1) {
+              // Make the size of this region to the height of the first horizontal pair
+              region.element.height(firstHorizRegion.height());
 
-                // position or offset? 
-                // THIS IS WHERE I LEFT OFF!!!!!!!!!!@starthere!!!!
-                region.gutter.element.css('top', region.parent().element.offset().top);
-                region.gutter.element.height(region.parent().element.height());
-
-                console.log('e',region.order, region.gutter.element, region.parent().element);
+              if (region.order == 1) { // Only do this once per region pair.
+                // Move the top of the vertical gutter, to the top of the first horizontal parent.
+                region.gutter.element.css('top', firstHorizRegion.offset().top);
+                // Resize the the vertical gutter to the height of the first horizontal parent.
+                region.gutter.element.height(region.element.parent().height());
 
               }
 
             }
-            else if (region.orientation == 'horizontal') {
+            else if (region.orientation == 'horizontal') { // Regions that are above / below
 
-              region.element.height(region.parent().element.height() / 2);
+              /*
+              var height = region.parent().parent().element.height() / 2;
 
-              if (region.order == 1) {
+              region.element.height(height);
+              */
 
-                //region.gutter.element.css('top', region.element.offset().top - GUTTER_SIZE);
-                debugger;
+              if (region.order == 1) { // Only do this once per region pair.
 
+                region1Height = region.element.height();
+                region2Height = region.sibling().element.height();
+
+                ratio = region.parent().element.height() / (region1Height + region2Height)
+
+                region.element.height(ratio * region1Height);
+                region.sibling().element.height(ratio * region2Height);
+
+
+                region.gutter.element.css('top', region.element.offset().top - GUTTER_SIZE);
               }
 
             }
