@@ -249,7 +249,8 @@
       // the region inherantly
       //this.getElement().remove()
 
-      debugger;
+      // remove the gutter that seperates the region
+      this.gutter.remove();
 
       // Remove the region from the collection
       vegas.regions.remove(this);

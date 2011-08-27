@@ -1,6 +1,6 @@
-(function () {
-  var global = (function () {return this;}).call(),
-      vegas = global.vegas;
+(function (global) {
+  var vegas = global.vegas,
+      utils = vegas.utils;
 
     /**
      * @namespace vegas.session
@@ -14,47 +14,118 @@
         state: {}, // This is where all session information is stored
 
         init: function () {
-//          this.createSession();
+          this.createSession();
         },
 
-        createSession: function () {
+        createSession: function (session) {
 
-            var editArea1 = new vegas.EditArea({
-              name: 'Edit Area 2'
-            });
+          session = session || this.getSession('default');
 
-            var editArea2 = new vegas.EditArea({
-              name: 'Edit Area 2'
-            });
+            function createSessionItems(sessionItem, parentRegion) {
 
-            var editorRegion = new vegas.Region({
-              width: '100%',
-              height: '100%',
-              x: 0,
-              y: 0,
-              contents: [editArea1, editArea2]
-            });
+              if (sessionItem.length) {
+                for (var i = 0; i < sessionItem.length; i++) {
+                  new vegas[sessionItem[i].type](sessionItem[i].properties, parentRegion);
+                }
+                return false;
+              }
 
-            var commandRegion = new vegas.CommandBar({
-              width: '100%',
-              height: '25',
-              x: 0,
-              y: 0
-            });
+              var regionPair = new vegas.RegionPair(sessionItem.type, parentRegion)
 
-            var primaryView = new vegas.View({
-              primary: true,
-              context: vegas.view.getCurrentWindow(),
-              regionList: [editorRegion, commandRegion]
-            });
+              if (sessionItem.region1) {
+                createSessionItems(sessionItem.region1, regionPair[0]);
+              }
 
-            var views = [primaryView];
+              if (sessionItem.region2) {
+                createSessionItems(sessionItem.region2, regionPair[1]);
+              }
 
-            this.state = {
-              activeView: views[0],
-              activeRegion: editorRegion,
-              views: views
             }
+
+            var applicationRegion = vegas.application.insertApplicationRegion();
+
+            createSessionItems(session, applicationRegion);
+
+        },
+
+        getCurrentSession: function () {
+
+          var applicationRegion = vegas.regions[0];
+
+          function getSessionItems(sessionItem, regions) {
+            regions = regions || {};
+
+            var regionPair = sessionItem.children();
+            if (regionPair.length) {
+
+              var regions = {'type': regionPair[0].orientation};
+
+              regions.region1 = getSessionItems(regionPair[0], regions);
+
+              regions.region2 = getSessionItems(regionPair[1], regions);
+
+              return regions;
+            }
+            else {
+              var components = [];
+              for (var i = 0; i < sessionItem.components.length; i++) {
+                var component = sessionItem.components[i];
+                var obj = {'type': component.type, 'properties': component.getSessionProperties()};
+                components.push(obj);
+              }
+              return components;
+            }
+          }
+
+          return getSessionItems(applicationRegion);
+        },
+
+        getDefaultSession: function () {
+            return 'testSession1'; // @todo: filesystem
+        },
+
+        getSession: function (sessionName) {
+
+          var session = false;
+
+          var sessionName = sessionName || this.getCurrentSession();
+
+          if (sessionName == 'default') {
+            sessionName = this.getDefaultSession();
+          }
+
+          if (!session) {
+            var testSessions = getTestSessions();
+            if (sessionName in testSessions) {
+              session = testSessions[sessionName];
+            }
+          }
+
+          if (!session) {
+            console.log('could not get session');
+          }
+
+          return session;
+
+        },
+
+        emptySession: function () {
+          vegas.regions = new vegas.Regions();
+          vegas.components = new vegas.Components();
+          vegas.gutters= new vegas.Gutters();
+          vegas.tabs = new vegas.Tabs();
+          // @todo;
+        },
+
+        loadSession: function (sessionName) {
+          var session = this.getSession(sessionName) ;
+          this.emptySession();
+          this.createSession(session);
+        },
+
+        logSession: function (session) {
+          session = this.getSession(session);
+          console.log(JSON.stringify(session));
         },
 
         /**
@@ -104,54 +175,23 @@
 
     }());
 
+
+
   vegas.module.register('session.js');
 
-}());
+})(this);
 
-/**
-
-  var session = {
-
-    activeView: session.windows[1],
-    activePane: session.activeWindow.panes[0],
-    activeTab: session.activePane.tabs[3],
-    activeEditAreaPane: null,
-    activeBuffer: session.activePane.tabs[3],
-    activeEditAreaPane: null,
-    windows: [
-      {
-        panes: [
-          {
-            tabs: [new EditArea(), componentInstance],
-          }
-        ]
-      },
-      {
-        panes: [
-          [
-            {
-              tabs: [vegasAreaComponent, vegasAreaComponent, vegasAreaComponent]
-            },
-            {
-              tabs: [vegasAreaComponent]
-            }
-          ],
-        ]
-      }
-    ],
-
-    buffers: [
-      { // bufferInstance
-        resource: vegas.resourceList[0],
-        name: 'somedocument',
-        value: [
-          'this is one line of text',
-          'this is another line of text',
-        ]
-      }
-    ],
-
-
+// To ease the pane of testing sessions:
+// vegas.session.logSession(); // outputs serialized session to console
+// vegas.session.loadSession('testSession5'); // loads a named serialized session below
+function getTestSessions () {
+  var testSessions = {
+    'testSession1' : [{"type":"EditArea","properties":{"title":"example 1"}}],
+    'testSession2' : {"type":"horizontal","region1":[{"type":"EditArea","properties":{"title":"example 1"}}],"region2":[{"type":"EditArea","properties":{"title":"example 1"}}]},
+    'testSession3' : {"type":"vertical","region1":[{"type":"EditArea","properties":{"title":"example 1"}}],"region2":[{"type":"EditArea","properties":{"title":"example 1"}}]},
+    'testSession4' : {"type":"horizontal","region1":{"type":"vertical","region1":{"type":"horizontal","region1":[{"type":"EditArea","properties":{"title":"example 1"}}],"region2":{"type":"horizontal","region1":[{"type":"EditArea","properties":{"title":"untitled 93"}}],"region2":[{"type":"EditArea","properties":{"title":"untitled 530"}}]}},"region2":[{"type":"EditArea","properties":{"title":"untitled 15"}}]},"region2":[{"type":"EditArea","properties":{"title":"example 1"}}]},
+    'testSession5' : {"type":"horizontal","region1":{"type":"vertical","region1":{"type":"horizontal","region1":[{"type":"EditArea","properties":{"title":"example 1"}}],"region2":[{"type":"EditArea","properties":{"title":"example 1"}}]},"region2":{"type":"vertical","region1":[{"type":"EditArea","properties":{"title":"example 1"}}],"region2":[{"type":"EditArea","properties":{"title":"example 1"}}]}},"region2":[{"type":"EditArea","properties":{"title":"example 1"}},{"type":"EditArea","properties":{"title":"example 1"}},{"type":"EditArea","properties":{"title":"example 1"}},{"type":"EditArea","properties":{"title":"example 1"}}]},
+    'testSession6' : {"type":"vertical","region1":{"type":"horizontal","region1":{"type":"horizontal","region1":[{"type":"EditArea","properties":{"title":"example 1"}}],"region2":[{"type":"EditArea","properties":{"title":"untitled 947"}}]},"region2":[{"type":"EditArea","properties":{"title":"untitled 796"}}]},"region2":{"type":"horizontal","region1":[{"type":"EditArea","properties":{"title":"example 1"}}],"region2":[{"type":"EditArea","properties":{"title":"untitled 47"}}]}}
   };
-
- */
+  return testSessions;
+}

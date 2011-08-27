@@ -25,6 +25,28 @@
           this.setDefaultTitle();
         },
 
+        /**
+         * Creates the base application markup wrapping, this is the first
+         * piece of markup displayed in the body.
+         */
+        insertApplicationRegion: function () {
+
+          var regionObject = new vegas.Region('application', false, null, false);
+
+          var applicationWrapper = jQuery(document.body).html('<div class="application region" id="' + regionObject.id + '"></div>').children();
+
+          // Make the height of the wrapper reach the height of the full screen
+          applicationWrapper[0].style.cssText += 'height:' + window.innerHeight + 'px !important;';
+
+          regionObject.element = applicationWrapper;
+
+          applicationWrapper.data('object', regionObject);
+
+          vegas.regions.add(regionObject);
+
+          return regionObject;
+        },
+
         setDefaultTitle: function () {
           this.setTitle('Veg' +  vegas.SPADE + 's');
         },

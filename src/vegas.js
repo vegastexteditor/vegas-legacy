@@ -65,7 +65,7 @@
       loadQueue: [],
 
       register: function(name){
-        console.info('loaded: ', name);
+        //console.info('loaded: ', name);
       },
 
       isLoaded: function (src) {

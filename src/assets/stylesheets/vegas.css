@@ -1,4 +1,7 @@
 /* line 1, src/vegas.scss */
+html body.cusror-ns-resize * {
+  cursor:ns-resize !important;
+}
 html body * {
   cursor: default;
   -moz-user-select: none;
@@ -466,4 +469,7 @@ buttons {
 
 .gutter-vertical{
   cursor:ew-resize;
+}
+.gutterGhost {
+  opacity:.5;
 }

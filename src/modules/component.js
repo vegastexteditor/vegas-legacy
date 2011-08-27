@@ -37,6 +37,13 @@
         return jQuery(document.getElementById(this.id));
       },
 
+      getSessionProperties: function () {
+        var properties = {
+          title: this.title
+        };
+        return properties;
+      },
+
       /**
        * Insert a component inside of a region, creates the markup and instantiates
        * the component object instance.

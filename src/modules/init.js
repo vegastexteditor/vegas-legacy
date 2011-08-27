@@ -27,7 +27,6 @@
       },
 
       register: function (initObject, name) {
-        console.log(name);
         this.initObjects.push(initObject);
       }
 
