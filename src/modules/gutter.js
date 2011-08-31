@@ -5,7 +5,8 @@
  */
 (function (global) {
   var vegas = global.vegas,
-      utils = vegas.utils;
+      utils = vegas.utils,
+      _ = global._;
 
   var GUTTER_SIZE = 5; // @todo: setting
   var REGION_MAX_HEIGHT = 50; // @todo: setting
@@ -38,7 +39,21 @@
       // Keep track of all gutters created in the application namespace.
       vegas.gutters.add(this);
 
+      if (regionPair[0].orientation == 'vertical') {
+        var totalWidth = regionPair[0].parent().element.width();
+        var splitWidth = totalWidth / 2;
+        regionPair[0].element.width(Math.floor(splitWidth) - GUTTER_SIZE);
+        regionPair[1].element.width(Math.ceil(splitWidth));
+      }
+
+      if (regionPair[0].orientation == 'horizontal') {
+        var splitHeight = (regionPair[0].element.height() + regionPair[1].element.height()) / 2;
+        regionPair[0].element.height(Math.floor(splitHeight) - Math.ceil(GUTTER_SIZE / 2));
+        regionPair[1].element.height(Math.ceil(splitHeight) - Math.floor(GUTTER_SIZE / 2));
+      }
+
       // When creating a region pair, make sure the width is specified.
+      /*
       regionPair.forEach(function (region) {
         if (orientation == 'vertical') {
           region.element.width(region.element.width() - (GUTTER_SIZE / 2));
@@ -47,6 +62,7 @@
           region.element.height(region.element.height() - (GUTTER_SIZE / 2));
         }
       });
+      */
 
       var gutterElement;
       if (orientation == 'vertical') {

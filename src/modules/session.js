@@ -14,14 +14,14 @@
         state: {}, // This is where all session information is stored
 
         init: function () {
-          this.createSession();
+          this.create();
         },
 
-        createSession: function (session) {
+        create: function (session) {
 
-          session = session || this.getSession('default');
+          session = session || this.get('default');
 
-            function createSessionItems(sessionItem, parentRegion) {
+            function createItems(sessionItem, parentRegion) {
 
               if (sessionItem.length) {
                 for (var i = 0; i < sessionItem.length; i++) {
@@ -33,26 +33,26 @@
               var regionPair = new vegas.RegionPair(sessionItem.type, parentRegion)
 
               if (sessionItem.region1) {
-                createSessionItems(sessionItem.region1, regionPair[0]);
+                createItems(sessionItem.region1, regionPair[0]);
               }
 
               if (sessionItem.region2) {
-                createSessionItems(sessionItem.region2, regionPair[1]);
+                createItems(sessionItem.region2, regionPair[1]);
               }
 
             }
 
             var applicationRegion = vegas.application.insertApplicationRegion();
 
-            createSessionItems(session, applicationRegion);
+            createItems(session, applicationRegion);
 
         },
 
-        getCurrentSession: function () {
+        getCurrent: function () {
 
           var applicationRegion = vegas.regions[0];
 
-          function getSessionItems(sessionItem, regions) {
+          function getItems(sessionItem, regions) {
             regions = regions || {};
 
             var regionPair = sessionItem.children();
@@ -60,9 +60,9 @@
 
               var regions = {'type': regionPair[0].orientation};
 
-              regions.region1 = getSessionItems(regionPair[0], regions);
+              regions.region1 = getItems(regionPair[0], regions);
 
-              regions.region2 = getSessionItems(regionPair[1], regions);
+              regions.region2 = getItems(regionPair[1], regions);
 
               return regions;
             }
@@ -77,24 +77,30 @@
             }
           }
 
-          return getSessionItems(applicationRegion);
+          return getItems(applicationRegion);
         },
 
-        getDefaultSession: function () {
+        getDefault: function () {
             return 'testSession1'; // @todo: filesystem
         },
 
-        getSession: function (sessionName) {
+        get: function (sessionName) {
 
           var session = false;
 
-          var sessionName = sessionName || this.getCurrentSession();
-
-          if (sessionName == 'default') {
-            sessionName = this.getDefaultSession();
+          // If no session name is provided, return the current session.
+          if (!sessionName) {
+           session = this.getCurrent();
           }
 
+          // Use the default session name if 'default' is provided
+          if (sessionName == 'default') {
+            sessionName = this.getDefault();
+          }
+
+          // Didn't load a session already?
           if (!session) {
+            // Attempt to load the session from the test sessions.
             var testSessions = getTestSessions();
             if (sessionName in testSessions) {
               session = testSessions[sessionName];
@@ -109,7 +115,7 @@
 
         },
 
-        emptySession: function () {
+        empty: function () {
           vegas.regions = new vegas.Regions();
           vegas.components = new vegas.Components();
           vegas.gutters= new vegas.Gutters();
@@ -117,14 +123,14 @@
           // @todo;
         },
 
-        loadSession: function (sessionName) {
-          var session = this.getSession(sessionName) ;
-          this.emptySession();
-          this.createSession(session);
+        load: function (sessionName) {
+          var session = this.get(sessionName) ;
+          this.empty();
+          this.create(session);
         },
 
-        logSession: function (session) {
-          session = this.getSession(session);
+        log: function (session) {
+          session = this.get(session);
           console.log(JSON.stringify(session));
         },
 
@@ -182,8 +188,8 @@
 })(this);
 
 // To ease the pane of testing sessions:
-// vegas.session.logSession(); // outputs serialized session to console
-// vegas.session.loadSession('testSession5'); // loads a named serialized session below
+// vegas.session.log(); // outputs serialized session to console
+// vegas.session.load('testSession5'); // loads a named serialized session below
 function getTestSessions () {
   var testSessions = {
     'testSession1' : [{"type":"EditArea","properties":{"title":"example 1"}}],
@@ -191,7 +197,8 @@ function getTestSessions () {
     'testSession3' : {"type":"vertical","region1":[{"type":"EditArea","properties":{"title":"example 1"}}],"region2":[{"type":"EditArea","properties":{"title":"example 1"}}]},
     'testSession4' : {"type":"horizontal","region1":{"type":"vertical","region1":{"type":"horizontal","region1":[{"type":"EditArea","properties":{"title":"example 1"}}],"region2":{"type":"horizontal","region1":[{"type":"EditArea","properties":{"title":"untitled 93"}}],"region2":[{"type":"EditArea","properties":{"title":"untitled 530"}}]}},"region2":[{"type":"EditArea","properties":{"title":"untitled 15"}}]},"region2":[{"type":"EditArea","properties":{"title":"example 1"}}]},
     'testSession5' : {"type":"horizontal","region1":{"type":"vertical","region1":{"type":"horizontal","region1":[{"type":"EditArea","properties":{"title":"example 1"}}],"region2":[{"type":"EditArea","properties":{"title":"example 1"}}]},"region2":{"type":"vertical","region1":[{"type":"EditArea","properties":{"title":"example 1"}}],"region2":[{"type":"EditArea","properties":{"title":"example 1"}}]}},"region2":[{"type":"EditArea","properties":{"title":"example 1"}},{"type":"EditArea","properties":{"title":"example 1"}},{"type":"EditArea","properties":{"title":"example 1"}},{"type":"EditArea","properties":{"title":"example 1"}}]},
-    'testSession6' : {"type":"vertical","region1":{"type":"horizontal","region1":{"type":"horizontal","region1":[{"type":"EditArea","properties":{"title":"example 1"}}],"region2":[{"type":"EditArea","properties":{"title":"untitled 947"}}]},"region2":[{"type":"EditArea","properties":{"title":"untitled 796"}}]},"region2":{"type":"horizontal","region1":[{"type":"EditArea","properties":{"title":"example 1"}}],"region2":[{"type":"EditArea","properties":{"title":"untitled 47"}}]}}
+    'testSession6' : {"type":"vertical","region1":{"type":"horizontal","region1":{"type":"horizontal","region1":[{"type":"EditArea","properties":{"title":"example 1"}}],"region2":[{"type":"EditArea","properties":{"title":"untitled 947"}}]},"region2":[{"type":"EditArea","properties":{"title":"untitled 796"}}]},"region2":{"type":"horizontal","region1":[{"type":"EditArea","properties":{"title":"example 1"}}],"region2":[{"type":"EditArea","properties":{"title":"untitled 47"}}]}},
+    'testSession7' : {"type":"vertical","region1":[{"type":"EditArea","properties":{"title":"example 1"}}],"region2":{"type":"horizontal","region1":{"type":"horizontal","region1":[{"type":"EditArea","properties":{"title":"untitled 847"}}],"region2":[{"type":"EditArea","properties":{"title":"untitled 387"}}]},"region2":{"type":"vertical","region1":[{"type":"EditArea","properties":{"title":"untitled 297"}}],"region2":[{"type":"EditArea","properties":{"title":"untitled 239"}}]}}}
   };
   return testSessions;
 }
