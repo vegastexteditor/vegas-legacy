@@ -2,11 +2,17 @@
  *
  * Gutters are seperators for panes, they provide a space in which provides the
  * ability to resize and manage positions of a region pair.
+ *
+ * @task:FeatureRequest: When resizing panes, currently when resizing a region
+ * pair, when you resize to where one of the regions reach its minimum height
+ * the resizing stops and you are not allowed to resize past this until you
+ * make additional room. It would be ideal that when you resize a region pair
+ * and you pass the minimum height for one, room is made by resizing other
+ * panes automatically. This is a difficult task.
  */
 (function (global) {
   var vegas = global.vegas,
-      utils = vegas.utils,
-      _ = global._;
+      utils = vegas.utils;
 
   var GUTTER_SIZE = 5; // @todo: setting
   var REGION_MAX_HEIGHT = 50; // @todo: setting
@@ -39,6 +45,8 @@
       // Keep track of all gutters created in the application namespace.
       vegas.gutters.add(this);
 
+      // This resizes each region pair to be split up evenly while accounting
+      // for the gutter width... @todo: should this be in RegionPair?
       if (regionPair[0].orientation == 'vertical') {
         var totalWidth = regionPair[0].parent().element.width();
         var splitWidth = totalWidth / 2;
@@ -52,18 +60,7 @@
         regionPair[1].element.height(Math.ceil(splitHeight) - Math.floor(GUTTER_SIZE / 2));
       }
 
-      // When creating a region pair, make sure the width is specified.
-      /*
-      regionPair.forEach(function (region) {
-        if (orientation == 'vertical') {
-          region.element.width(region.element.width() - (GUTTER_SIZE / 2));
-        }
-        else if ('horizontal') {
-          region.element.height(region.element.height() - (GUTTER_SIZE / 2));
-        }
-      });
-      */
-
+      // Calculate position / width for placement of the gutter.
       var gutterElement;
       if (orientation == 'vertical') {
 
@@ -156,84 +153,81 @@
 
           if (gutter.orientation == 'horizontal') {
             jQuery(document.body).removeClass('cursor-ns');
+
+            // Both regions that are inbetween the gutter
+            var regionPairElements = region2.add(region1);//region1.add(region2);
+
+            var topNewHeight = region1Height - offset.top;
+            var bottomNewHeight = region2Height + offset.top;
+
+            // Resize the top region of the gutter
+            region1.height(topNewHeight);
+
+            // Resize the bottom region of the gutter
+            region2.height(bottomNewHeight);
+
+            regions1 = region1.find('.region');
+            regions2 = region2.find('region');
+
+            // Loop through all the regions within the region pair
+            regions1.add(regions2).each(function (i, e) {
+
+              debugger;
+
+              var region = vegas.regions.fromElement(e);
+
+              if (region.orientation == 'vertical') { // Regions that are side by side
+                region.element.height(region.element.parent().height());
+                region.gutter.element.height(region.element.parent().height());
+                region.gutter.element.css('top', region.element.parent().offset().top);
+              }
+              else { // == 'horizontal'
+                
+                if (region.order == 1) {
+                  var region2NewHeight = region.element.parent().height() - region.sibling().element.height() - GUTTER_SIZE;
+                  region.element.height(region2NewHeight);
+                }
+
+              }
+
+            });
+
           }
+          else {
+            // Both regions that are inbetween the gutter
+            var regionPairElements = region2.add(region1);//region1.add(region2);
 
-          // Both regions that are inbetween the gutter
-          var regionPairElements = region2.add(region1);//region1.add(region2);
+            var topNewWidth = region1Width - offset.left;
+            var bottomNewWidth = region2Width + offset.left;
 
-          var topNewHeight = region1Height - offset.top;
-          var bottomNewHeight = region2Height + offset.top;
+            // Resize the top region of the gutter
+            region1.width(topNewWidth);
 
-          // Resize the top region of the gutter
-          region1.height(topNewHeight);
+            // Resize the bottom region of the gutter
+            region2.width(bottomNewWidth);
 
-          // Resize the bottom region of the gutter
-          region2.height(bottomNewHeight);
+            // Loop through all the regions within the region pair
+            regionPairElements.find('.region').each(function (i, e) {
 
-          // Loop through all the regions within the region pair
-          regionPairElements.find('.region').each(function (i, e) {
+              var region = vegas.regions.fromElement(e);
 
-            var region = vegas.regions.fromElement(e);
-
-            console.log(e);
-
-            if (region.orientation == 'vertical') { // Regions that are side by side
-
-              var parent = region.element.parents('.region-horizontal:first');
-
-              if (region.order == 1) { // Only do this once per region pair.
-                // Move the top of the vertical gutter, to the top of the first horizontal parent.
-                region.gutter.element.css('top', parent.offset().top);
-                // Resize the the vertical gutter to the height of the first horizontal parent.
-
-                var res;
-                if (gutter.regionPair[0].id === parent.attr('id')) {
-                  res = region.element.parent().height();
-                  console.log('ionbo');
+              if (region.orientation == 'vertical') { // Regions that are side by side
+                region.element.width(region.element.parent().width());
+                region.gutter.element.width(region.element.parent().width());
+              }
+              else { // == 'horizontal'
+                
+                if (region.order == 1) {
+                  var region2NewWidth = region.element.parent().width() - region.sibling().element.width() - GUTTER_SIZE;
+                  region.element.width(region2NewWidth);
+                  debugger;
+                  region.gutter.element.css('left', region.element.parent().offset().left);
                 }
-                else {
-                  // I don't even know what i'm doing anymore...
-                  // @todo: document when in right frame of mind.
-                  var parentObj = vegas.regions.fromElement(parent);
-                  var region1Height = parentObj.element.height();
-                  var region2Height = parentObj.sibling().element.height();
-                  var newHeight = parentObj.parent().element.height();
-                  var ratio = newHeight / (region1Height + region2Height);
-                  res = ratio * region1Height;
-                }
-
-                region.gutter.element.height(res);
-
-                region.element.height(res);
 
               }
 
-            }
-            else if (region.orientation == 'horizontal') { // Regions that are above / below
-
-              /*
-              var height = region.parent().parent().element.height() / 2;
-
-              region.element.height(height);
-              */
-
-              if (region.order == 1) { // Only do this once per region pair.
-
-                region1Height = region.element.height();
-                region2Height = region.sibling().element.height();
-                ratio = region.parent().element.height() / (region1Height + region2Height)
-
-                region.element.height(ratio * region1Height);
-                region.sibling().element.height(ratio * region2Height);
-
-                region.gutter.element.css('top', region.element.offset().top - GUTTER_SIZE);
-              }
-
-            }
-
-          });
-
-          // Bring the lowest horizontal gutter to the lowest point
+            });
+          }
 
         }
 
