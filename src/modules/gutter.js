@@ -141,8 +141,68 @@
         var mouseOffsetY;
         var mouseOffsetX;
 
-        function onDrag () {
+        /**
+         * Find the lowest bottom (not including the real bottom) out of a set
+         * of regions.
+         */
+        function getLowestBottom (regionSet) {
+          var regionSetBottomest = regionSet.offset().top + regionSet.height();
+          var pairs = {};
+          var bottoms = [];
+          regionSet.each(function (i, e) {
+            var element = jQuery(e);
+            var offset = element.offset();
+            var bottom = offset.top + element.height();
 
+            if (bottom !== regionSetBottomest) {
+              bottoms.push(bottom);
+              pairs[bottom] = {bottom:bottom, element:e};
+            }
+
+          });
+
+          var min = Math.min.apply(Math.min, bottoms);
+
+          debugger;
+          console.log(regionSetBottomest);
+
+          var lowestBottom = pairs[min].element;
+
+          return lowestBottom.offset().top + lowestBottom.height() + GUTTER_SIZE;
+        }
+
+        /**
+         * Gets the Highest element from a set of regions.
+         */
+        function getHighestBottom (regionSet) {
+          var pairs = {};
+          var tops = [];
+          regionSetTopest = regionSet.offset().top
+
+          regionSet.each(function (i, e) {
+            var element = jQuery(e);
+            var offset = element.offset();
+            var top = offset.top;
+
+            if (top !== regionSetTopest) {
+              tops.push(top);
+              pairs[top] = {top:top, element:e};
+            }
+
+          });
+
+          var min = Math.min.apply(Math.min, tops);
+
+          return pairs[min].element;
+        }
+
+        function onDrag (x, y) {
+            var regions1 = region1.find('.region');
+            var lowestBottomPos = jQuery(getLowestBottom(regions1));
+            if (y < lowestBottomPos) {
+              return false;
+            }
+            console.log(x, y, meh);
         }
 
         /**
@@ -167,12 +227,17 @@
             region2.height(bottomNewHeight);
 
             regions1 = region1.find('.region');
-            regions2 = region2.find('region');
+            regions2 = region2.find('.region');
+
+            /*
+            var TopShit = getLowestBottom(regions1);
+            var BottomShit = getHighestBottom(regions2);
+
+            console.log(offset);
+            */
 
             // Loop through all the regions within the region pair
             regions1.add(regions2).each(function (i, e) {
-
-              debugger;
 
               var region = vegas.regions.fromElement(e);
 
@@ -267,6 +332,12 @@
           jQuery(document.body).bind('mousemove', function (e) {
             var left = e.clientX;
             var top = e.clientY;
+
+            if (!onDrag(left, top)) {
+              console.log('shnap');
+              return false;
+            }
+ 
             if (gutter.orientation == 'horizontal') {
 
               // @todo: find the first horizontal bar that aligns with this horizontal bar.
@@ -312,7 +383,6 @@
               }
 
             }
-            onDrag();
           });
 
           jQuery(window).bind('mouseup.gutterDrag', function (e) {
