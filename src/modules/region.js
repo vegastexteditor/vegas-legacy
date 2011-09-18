@@ -12,6 +12,8 @@
   var vegas = global.vegas,
       utils = vegas.utils;
 
+  var GUTTER_SIZE = 5;
+
   /**
    * @class RegionPair
    * @memberOf vegas
@@ -235,14 +237,9 @@
         return false;
       }
 
-      try {
       var parentRegion = this.parent();
 
       var siblingRegion = this.sibling();
-      }
-      catch (e) {
-        debugger;
-      }
 
       // Remove the region element, this should be pointless code since the
       // replacement of the parent region with the sibling region will remove
@@ -258,12 +255,17 @@
       // The reference to the parent region is now referencing the sibling region
       vegas.regions.hash[parentRegion.id] = siblingRegion;
 
-      // Since the parent region is referencing the sibling region
-      // the remove the original reference to the sibling region
-      vegas.regions.remove(siblingRegion);
-
       // Now Replace the parent region with the sibling regions contents
       parentRegion.getElement().html(siblingRegion.getElement().html());
+
+      // The parent region element should now have the id of the sibling region.
+      parentRegion.getElement().attr('id',siblingRegion.id);
+
+      // The parent region object should now have the id of the sibling region.
+      parentRegion.id = siblingRegion.id;
+
+      // update the reference to the element
+      parentRegion.element = parentRegion.getElement();
 
       // Since the markup has been reinserted from the parent, the element
       // references in the objects are now stale... refresht them.
@@ -275,6 +277,7 @@
       for (var i = 0; i < componentsLen; i++) {
         component = components[i];
         component.element = jQuery(document.getElementById(component.id));
+        component.region = parentRegion;
         parentRegion.components[i] = component;
       }
 
@@ -286,45 +289,34 @@
     },
 
     parent: function () {
-
       var parent = this.getElement().parent();
-
-      if (parent[0] == document.body) {
+      // Could not get the element's parent, or there is no parent (its the container)
+      if (!parent.length || (parent.length && parent[0] == document.body)) {
         return false;
       }
-
-      var parentId = parent[0].id;
-
-      for (var i = 0; i < vegas.regions.length; i++) {
-        if (vegas.regions[i].id == parentId) {
-          return vegas.regions[i];
-        }
-      }
-
-      return false;
+      // Get the parent from the current element
+      return vegas.regions.fromElement(parent);
+      // get the cached sibling from the object.
+      return this._parent;
     },
 
     sibling: function () {
-
-      var siblings = this.getElement().siblings();
-
-      if (!siblings.length) {
-        return false;
-      }
-
-      var siblingId = siblings[0].id;
-
-      for (var i = 0; i < vegas.regions.length; i++) {
-        if (vegas.regions[i].id == siblingId) {
-          return vegas.regions[i];
-        }
-      }
-
-      return false;
-
+      // Get the sibling from the current element;
+      return vegas.regions.fromElement(this.getElement().siblings());
+      // Get the cached sibling from the object.
+      return this._sibling;
     },
 
     children: function (fresh) {
+      // Get the children regions from the current element
+      var children = this.getElement().children('.region');
+      if (children.length == 2) {
+        return [vegas.regions.fromElement(children.first()), vegas.regions.fromElement(children.last())];
+      }
+      else {
+        return false;
+      }
+      // Get the cached children regions from the object.
       return this._children;
     },
 
@@ -616,9 +608,51 @@
       }
 
       return childlessRegions;
+    },
+
+    reflow: function () {
+
+      console.log('reflow.');
+
+      var region = vegas.regions[0];
+
+      resizeChildren(region);
+
+      function resizeChildren(region) {
+       var pair = region.children();
+
+        if (pair) {
+          var orientation = pair[0].orientation;
+
+          var parentElement = region.getElement();
+          var pair1Element = pair[0].getElement();
+          var pair2Element = pair[1].getElement();
+
+          if (orientation == 'vertical') {
+            var pairWidth = pair1Element.width() + pair2Element.width() + GUTTER_SIZE;
+            var parentElementWidth = parentElement.width();
+            // The width of the region pair does not fit into the parent region.
+            if (pairWidth < parentElementWidth) {
+              // Get the amount of pixels its going to take for us to match the parent region.
+              var difference = parentElementWidth - pairWidth;
+              var first = Math.floor(difference / 2), second = difference - first;
+              pair1Element.width(pair1Element.width() + first);
+              pair2Element.width(pair2Element.width() + second);
+            }
+          }
+
+          resizeChildren(pair[0]);
+          resizeChildren(pair[1]);
+
+        }
+      }
+
+
     }
 
   };
+
+
 
   // Creates an instance of the Region collection for keeping track of regions.
   vegas.regions = new vegas.Regions();

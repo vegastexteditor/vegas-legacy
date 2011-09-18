@@ -580,6 +580,42 @@
 
     },
 
+    dragger: function (options) {
+
+      jQuery(document.body).bind('mousedown', function (e) {
+
+        var target = jQuery(e.target);
+
+        if (!target.is(options.element)) {return false;}
+
+        var dragStarted = false;
+
+        var mouseMove = function mouseMove (e) {
+
+          if (!dragStarted) {
+            options.onDragStart(e.clientX, e.clientY, target, e);
+            dragStarted = true;
+          }
+
+          var onDragged = options.onDrag(e.clientX, e.clientY, target, e);
+
+        };
+
+        jQuery(window).bind('mousemove', mouseMove);
+
+        var mouseUp = function mouseUp (e) {
+          if (dragStarted) {
+            options.onDragStop(e.clientX, e.clientY, target, e);
+          }
+          jQuery(window).unbind('mousemove', mouseMove);
+          jQuery(window).unbind('mouseup', mouseUp);
+        };
+
+        jQuery(window).bind('mouseup', mouseUp);
+
+      });
+    },
+
     trim: jQuery.trim,
 
     /*

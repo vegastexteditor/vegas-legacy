@@ -48,19 +48,19 @@
       // This resizes each region pair to be split up evenly while accounting
       // for the gutter width... @todo: should this be in RegionPair?
       if (regionPair[0].orientation == 'vertical') {
-        var totalWidth = regionPair[0].parent().element.width();
+        var totalWidth = regionPair[0].parent().getElement().width();
         var splitWidth = totalWidth / 2;
-        regionPair[0].element.width(Math.floor(splitWidth) - GUTTER_SIZE);
-        regionPair[1].element.width(Math.ceil(splitWidth));
+        regionPair[0].getElement().width(Math.floor(splitWidth) - GUTTER_SIZE);
+        regionPair[1].getElement().width(Math.ceil(splitWidth));
       }
 
       if (regionPair[0].orientation == 'horizontal') {
-        var splitHeight = (regionPair[0].element.height() + regionPair[1].element.height()) / 2;
-        regionPair[0].element.height(Math.floor(splitHeight) - Math.ceil(GUTTER_SIZE / 2));
-        regionPair[1].element.height(Math.ceil(splitHeight) - Math.floor(GUTTER_SIZE / 2));
+        var splitHeight = (regionPair[0].getElement().height() + regionPair[1].getElement().height()) / 2;
+        regionPair[0].getElement().height(Math.floor(splitHeight) - Math.ceil(GUTTER_SIZE / 2));
+        regionPair[1].getElement().height(Math.ceil(splitHeight) - Math.floor(GUTTER_SIZE / 2));
       }
 
-      // Calculate position / width for placement of the gutter.
+      // Re-calculate position / width of regions for placement of the gutter.
       var gutterElement;
       if (orientation == 'vertical') {
 
@@ -70,7 +70,7 @@
         var gutterWidth = GUTTER_SIZE;
         var gutterHeight = region.height();
 
-        regionPair[1].element.css('margin-left', GUTTER_SIZE);
+        regionPair[1].getElement().css('margin-left', GUTTER_SIZE);
       }
       else if (orientation == 'horizontal') {
 
@@ -80,7 +80,7 @@
         var gutterWidth = region.width();
         var gutterHeight = GUTTER_SIZE;
 
-        regionPair[1].element.css('margin-top', GUTTER_SIZE);
+        regionPair[1].getElement().css('margin-top', GUTTER_SIZE);
       }
       else {
         console.error('orientation specified is unknown');
@@ -102,8 +102,83 @@
 
     },
 
+    /**
+     * Retrieves the primary gutter element.
+     */
+    getElement: function () {
+      return jQuery(document.getElementById(this.id));
+    },
+
+    /**
+     * Finds the highest Y position in which the gutter can be dragged to.
+     */
+    getLowestY: function () {
+      var region = this.regionPair[0].element;
+      var regionSet = region.find('.region');
+
+      var pairs = {};
+      var bottoms = [];
+      if (regionSet.length) {
+        var regionSetBottomest = region.offset().top + region.height();
+        regionSet.each(function (i, e) {
+          var element = jQuery(e);
+          var offset = element.offset();
+          var bottom = offset.top + element.height();
+
+          if (!(bottom >= regionSetBottomest - 1 && bottom <= regionSetBottomest + 1)) {
+            bottoms.push(bottom);
+            pairs[bottom] = {bottom:bottom, element:e};
+          }
+
+        });
+      }
+
+      if (bottoms.length) {
+        var max = Math.max.apply(Math.max, bottoms); // works with testSession8
+        var lowestBottom = jQuery(pairs[max].element);
+        return lowestBottom.offset().top + lowestBottom.height() + REGION_MAX_HEIGHT;
+      }
+      else {
+        return region.offset().top - GUTTER_SIZE + REGION_MAX_HEIGHT;
+      }
+    },
+
+    /**
+     * Finds the lowest Y position in which the gutter can be dragged to.
+     */
+    getHighestY: function () {
+      var region = this.regionPair[1].element;
+      var regionSet = region.find('.region');
+
+      var pairs = {};
+      var tops = [];
+      if (regionSet.length) {
+        regionSetTopest = region.offset().top
+        regionSet.each(function (i, e) {
+          var element = jQuery(e);
+          var offset = element.offset();
+          var top = offset.top;
+
+          if (!(top >= regionSetTopest - 1 && top <= regionSetTopest + 1)) {
+            tops.push(top);
+            pairs[top] = {top:top, element:e};
+          }
+
+        });
+      }
+
+      if(tops.length) {
+        var min = Math.min.apply(Math.min, tops);
+        var highestBottom = jQuery(pairs[min].element);
+        return highestBottom.offset().top - GUTTER_SIZE - REGION_MAX_HEIGHT;
+      }
+      else {
+        return region.offset().top + region.height() - REGION_MAX_HEIGHT;
+      }
+    },
+
     remove: function () {
-      this.element.remove();
+      this.getElement().remove();
     }
 
   };
@@ -124,92 +199,89 @@
 
         var self = this;
         var gutter;
-        var region1OrigHeight;
-        var region2OrigHeight
-        var dragStartTop;
-
         var region1;
         var region2;
         var region1Height;
         var region2Height;
         var region1Width;
         var region2Width;
-        var region1Offset;
-        var region2Offset;
-        var regionsHeight;
-        var regionsWidth;
-        var mouseOffsetY;
-        var mouseOffsetX;
+        var gutterGhost;
 
-        /**
-         * Find the lowest bottom (not including the real bottom) out of a set
-         * of regions.
-         */
-        function getLowestBottom (regionSet) {
-          var regionSetBottomest = regionSet.offset().top + regionSet.height();
-          var pairs = {};
-          var bottoms = [];
-          regionSet.each(function (i, e) {
-            var element = jQuery(e);
-            var offset = element.offset();
-            var bottom = offset.top + element.height();
+        function onDragStart (x, y, gutterElement) {
 
-            if (bottom !== regionSetBottomest) {
-              bottoms.push(bottom);
-              pairs[bottom] = {bottom:bottom, element:e};
-            }
+          gutter = vegas.gutters.fromElement(gutterElement);
 
-          });
+          region1 = gutter.regionPair[0].element;
+          region2 = gutter.regionPair[1].element;
+          region1Height = region1.height();
+          region2Height = region2.height();
+          region1Width = region1.width();
+          region2Width = region2.width();
 
-          var min = Math.min.apply(Math.min, bottoms);
+          if (gutter.orientation == 'horizontal') {
+            jQuery(document.body).addClass('cursor-ns');
+          }
 
-          debugger;
-          console.log(regionSetBottomest);
+          // Create the ghost gutter that will be dragged around, the original
+          // gutter element will be left in place.
+          gutterGhost = gutterElement.clone().addClass('gutterGhost');
+          jQuery(document.body).append(gutterGhost);
 
-          var lowestBottom = pairs[min].element;
+          dragStartPos = gutterElement.position();
 
-          return lowestBottom.offset().top + lowestBottom.height() + GUTTER_SIZE;
+          // Find the region that is directly above the the first region and
+          // determine its bottom position.
+          lowestY = gutter.getLowestY();
+          // Same as above but in reverse.
+          highestY = gutter.getHighestY();
         }
 
-        /**
-         * Gets the Highest element from a set of regions.
-         */
-        function getHighestBottom (regionSet) {
-          var pairs = {};
-          var tops = [];
-          regionSetTopest = regionSet.offset().top
+        function onDrag (x, y, gutterElement, e){
 
-          regionSet.each(function (i, e) {
-            var element = jQuery(e);
-            var offset = element.offset();
-            var top = offset.top;
+            var moveToY = false;
 
-            if (top !== regionSetTopest) {
-              tops.push(top);
-              pairs[top] = {top:top, element:e};
+            // If you drag below the lowest point your allowed to drag to
+            if (y < lowestY) {
+              // Snap to the highest point
+              moveToY = lowestY;
             }
 
-          });
+            // If you drag above the highest point your allowed to drag to
+            if (y > highestY) {
+              // Snap to the highest point
+              moveToY = highestY;
+            }
 
-          var min = Math.min.apply(Math.min, tops);
-
-          return pairs[min].element;
-        }
-
-        function onDrag (x, y) {
-            var regions1 = region1.find('.region');
-            var lowestBottomPos = jQuery(getLowestBottom(regions1));
-            if (y < lowestBottomPos) {
+            // If the mouse has gone past the max Y position
+            if (moveToY) {
+              // Position the gutter ghost element to the max Y position
+              gutterGhost.css({top: moveToY});
               return false;
             }
-            console.log(x, y, meh);
+ 
+            if (gutter.orientation == 'horizontal') {
+              gutterGhost.css({top: y});
+            }
+            else if (gutter.orientation == 'vertical') {
+              gutterGhost.css({top: x});
+            }
+
         }
 
         /**
          * @param {Integer} newPos When the gutter was dragged, this is the point]
          * at which the gutter has stopped dragging, its the new position.
          */
-        function onDragStop (newPos, offset) {
+        function onDragStop (x, y, gutterElement, e) {
+
+          var posNew = gutterGhost.position();
+          var offset= {
+            top: dragStartPos.top - posNew.top,
+            left: dragStartPos.left - posNew.left
+          };
+          gutterElement.remove();
+          gutterGhost.removeClass('gutterGhost');
+          gutter.element = gutterGhost;
 
           if (gutter.orientation == 'horizontal') {
             jQuery(document.body).removeClass('cursor-ns');
@@ -229,180 +301,54 @@
             regions1 = region1.find('.region');
             regions2 = region2.find('.region');
 
-            /*
-            var TopShit = getLowestBottom(regions1);
-            var BottomShit = getHighestBottom(regions2);
-
-            console.log(offset);
-            */
+            // Loop through all the regions within the region pair
+            regions1.each(function (i, e) {
+              var region = vegas.regions.fromElement(e);
+              if (region.orientation == 'vertical') { // Regions that are side by side
+                region.getElement().height(region.getElement().parent().height());
+                region.gutter.getElement().height(region.getElement().parent().height());
+                region.gutter.getElement().css('top', region.getElement().parent().offset().top);
+              }
+              else { // == 'horizontal'
+                if (region.order == 1) {
+                  var region2NewHeight = region.getElement().parent().height() - region.sibling().getElement().height() - GUTTER_SIZE;
+                  region.getElement().height(region2NewHeight);
+                }
+              }
+            });
 
             // Loop through all the regions within the region pair
-            regions1.add(regions2).each(function (i, e) {
+            regions2.each(function (i, e) {
 
               var region = vegas.regions.fromElement(e);
 
-              if (region.orientation == 'vertical') { // Regions that are side by side
-                region.element.height(region.element.parent().height());
-                region.gutter.element.height(region.element.parent().height());
-                region.gutter.element.css('top', region.element.parent().offset().top);
+              if (region.orientation == 'vertical') {
+                region.gutter.getElement().height(region.parent().getElement().height());
+                region.gutter.getElement().css('top', region.parent().getElement().offset().top)
+                region.getElement().height(region.getElement().parent().height())
               }
-              else { // == 'horizontal'
-                
-                if (region.order == 1) {
-                  var region2NewHeight = region.element.parent().height() - region.sibling().element.height() - GUTTER_SIZE;
-                  region.element.height(region2NewHeight);
+              else {
+                if (region.order == 0) {
+                  var region2NewHeight = region.getElement().parent().height() - region.sibling().getElement().height() - GUTTER_SIZE;
+                  region.getElement().height(region2NewHeight);
+                  region.gutter.getElement().css('top', region.sibling().getElement().offset().top - GUTTER_SIZE);
                 }
-
               }
 
             });
 
-          }
-          else {
-            // Both regions that are inbetween the gutter
-            var regionPairElements = region2.add(region1);//region1.add(region2);
-
-            var topNewWidth = region1Width - offset.left;
-            var bottomNewWidth = region2Width + offset.left;
-
-            // Resize the top region of the gutter
-            region1.width(topNewWidth);
-
-            // Resize the bottom region of the gutter
-            region2.width(bottomNewWidth);
-
-            // Loop through all the regions within the region pair
-            regionPairElements.find('.region').each(function (i, e) {
-
-              var region = vegas.regions.fromElement(e);
-
-              if (region.orientation == 'vertical') { // Regions that are side by side
-                region.element.width(region.element.parent().width());
-                region.gutter.element.width(region.element.parent().width());
-              }
-              else { // == 'horizontal'
-                
-                if (region.order == 1) {
-                  var region2NewWidth = region.element.parent().width() - region.sibling().element.width() - GUTTER_SIZE;
-                  region.element.width(region2NewWidth);
-                  debugger;
-                  region.gutter.element.css('left', region.element.parent().offset().left);
-                }
-
-              }
-
-            });
           }
 
         }
 
-        jQuery(document.body).bind('mousedown', function (e) {
-
-          var gutterElement = jQuery(e.target);
-
-          // annnd for the gutter only
-          if (!gutterElement.hasClass('gutter')) {return false;}
-
-          gutter = vegas.gutters.fromElement(gutterElement);
-
-          region1 = gutter.regionPair[0].element;
-          region2 = gutter.regionPair[1].element;
-          region1Height = region1.height();
-          region2Height = region2.height();
-          region1Width = region1.width();
-          region2Width = region2.width();
-          region1Offset = region1.offset();
-          region2Offset = region2.offset();
-          regionsHeight = region1Height + region2Height;
-          regionsWidth = region1Height + region2Height;
-          mouseOffsetY = e.clientY - gutterElement.offset().top;
-          mouseOffsetX = e.clientX - gutterElement.offset().left;
-
-          if (gutter.orientation == 'horizontal') {
-            jQuery(document.body).addClass('cursor-ns');
-          }
-
-          // Create the ghost gutter that will be dragged around, the original
-          // gutter element will be left in place.
-          var gutterGhost = gutterElement.clone().addClass('gutterGhost');
-          jQuery(document.body).append(gutterGhost);
-
-          dragStartPos = gutterElement.position();
-
-          jQuery(document.body).bind('mousemove', function (e) {
-            var left = e.clientX;
-            var top = e.clientY;
-
-            if (!onDrag(left, top)) {
-              console.log('shnap');
-              return false;
-            }
- 
-            if (gutter.orientation == 'horizontal') {
-
-              // @todo: find the first horizontal bar that aligns with this horizontal bar.
-              // the offset of that will be where it should stop + 100px
-
-              var topHeight = top - region1Offset.top - mouseOffsetY;
-              var bottomHeight = regionsHeight - topHeight;
-
-              if (topHeight < REGION_MAX_HEIGHT || bottomHeight < REGION_MAX_HEIGHT) {
-                topHeight = REGION_MAX_HEIGHT;
-                bottomHeight = REGION_MAX_HEIGHT;
-              }
-
-              if (topHeight > REGION_MAX_HEIGHT && bottomHeight > REGION_MAX_HEIGHT) {
-                gutterGhost.css({top: top - mouseOffsetY});
-              }
-              else if(topHeight < REGION_MAX_HEIGHT) {
-                gutterGhost.css({top: REGION_MAX_HEIGHT + region1Offset.top - mouseOffsetY});
-              }
-              else if (bottomHeight < REGION_MAX_HEIGHT){
-                gutterGhost.css({top: regionsHeight - REGION_MAX_HEIGHT + region1Offset.top - mouseOffsetY});
-              }
-
-            }
-            else if (gutter.orientation == 'vertical') {
-
-              var leftWidth = left - region1Offset.left - mouseOffsetX;
-              var bottomWidth = regionsWidth - leftWidth;
-
-              if (leftWidth < REGION_MAX_WIDTH || bottomWidth < REGION_MAX_WIDTH) {
-                leftWidth = REGION_MAX_WIDTH;
-                bottomWidth = REGION_MAX_WIDTH;
-              }
-
-              if (leftWidth > REGION_MAX_WIDTH && bottomWidth > REGION_MAX_WIDTH) {
-                gutterGhost.css({left: left - mouseOffsetX});
-              }
-              else if(leftWidth < REGION_MAX_WIDTH) {
-                gutterGhost.css({left: REGION_MAX_WIDTH + region1Offset.left - mouseOffsetX});
-              }
-              else if (bottomWidth < REGION_MAX_WIDTH){
-                gutterGhost.css({left: regionsHeight - REGION_MAX_WIDTH + region1Offset.left - mouseOffsetY});
-              }
-
-            }
-          });
-
-          jQuery(window).bind('mouseup.gutterDrag', function (e) {
-            var posNew = gutterGhost.position();
-            var offset= {
-              top: dragStartPos.top - posNew.top,
-              left: dragStartPos.left - posNew.left
-            };
-            gutterElement.remove();
-            gutterGhost.removeClass('gutterGhost');
-            gutter.element = gutterGhost;
-            onDragStop(posNew, offset);
-            jQuery(document.body).unbind('mousemove');
-            jQuery(window).unbind('mouseup');
-          });
-
-
+        vegas.utils.dragger({
+          element: '.gutter',
+          onDrag: onDrag,
+          onDragStart: onDragStart,
+          onDragStop: onDragStop
         });
 
-      }
+      },
 
     };
 
