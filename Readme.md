@@ -7,7 +7,8 @@ Vegas
 Status
 =====================
 * Completed Working prototype: http://bit.ly/vegasprototype (Chrome seems to work)
-* Building out skeleton of new architecture
+* Built out rough skeleton of new architecture (will be evolving of course)
+* Working on a robust GUI
 
 Authors
 =====================
@@ -30,7 +31,7 @@ License
 Application Focus
 =====================
 
-  The Primary audience is developers using web technologies for both development
+  The primary audience is developers using web technologies for both development
   of the project and regular use. In general it should support the use of and be
   extensible to include other editing focuses, e.i., general text editing, Ruby,
   Python, C, C++, Java, etc.
@@ -45,8 +46,9 @@ Target environments
   desktop applications. While allowing for existence on the web as well.
 
   Target desktop platforms include, Titanium Desktop, Future versions of
-  adobe air and any other desktop environments which may provide a JavaScript API
-  to the file system and some portions of the operating system.
+  adobe air and any other desktop environments which may provide a desktop
+  GUI and provides an API to the file system and some portions of the operating
+  system.
 
  Usability Goals
 =====================
@@ -105,18 +107,8 @@ Application Concepts
      can be overlayed on top of other Regions and are for use in a canvas element.
      visual area.
 
-  - **Panes:**
-     Panes are a type of pane that may be resized through the user interface,
-		 and contain Tabs. When there is only one pane, a pane takes up the entire
-		 window. Panes can be one or many. When in there multiple panes, a pane may
-		 be vertical or horizontal. Which allows for a "split view" of the editors
-		 Components
-
-     Panes should be done in html / css since its deals with layout structure
-     which html / css is great at.
-
   - **Components (cpnt):**
-     Visual representations of data in panes, i.e. editArea, fileExplorer, hintViewer
+     Visual representations of data in Regions, i.e. editArea, fileExplorer, hintViewer
 
   - **Tabs:**
      A group of Components inside of a single panes, can be visualized in (but
@@ -148,4 +140,4 @@ Application Concepts
 
 TODO
 =====================
-* Roadmap
+* Functional requirements for 1.0
