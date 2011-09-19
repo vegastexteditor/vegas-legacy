@@ -286,6 +286,10 @@
       // Refresh refrences
       parentRegion.updateFamilyRefs();
 
+      // Reflow regions and gutter positions
+      vegas.regions.reflow();
+      vegas.gutters.reflow();
+
     },
 
     parent: function () {
@@ -611,8 +615,6 @@
     },
 
     reflow: function () {
-
-      console.log('reflow.');
 
       var region = vegas.regions[0];
 

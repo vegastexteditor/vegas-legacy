@@ -348,7 +348,8 @@
           onDragStop: onDragStop
         });
 
-      },
+      }
+
 
     };
 
@@ -371,6 +372,49 @@
   };
 
   vegas.Gutters.prototype = {
+    /**
+     * Corrects the gutter position via each regionSet's position.
+     * Called when regions are removed
+     */
+    reflow: function () {
+      var gutter;
+      var region1Element;
+      var region2Element;
+
+      // Go through each gutter
+      for (var i = 0; i < vegas.gutters.length; i++) {
+        gutter = vegas.gutters[i];
+        // Ensure that its not wack? ie application region?
+        if (gutter.getElement().length > 0) {
+          region1Element = gutter.regionPair[0].getElement();
+          region2Element = gutter.regionPair[1].getElement();
+
+          // For vertical gutters
+          if (gutter.orientation == 'vertical') {
+            var left = region2Element.offset().left - GUTTER_SIZE;
+            var top = region2Element.offset().top;
+            // Position the gutter against the related regions position
+            gutter.getElement().css('left', left);
+            gutter.getElement().css('top', top);
+            gutter.getElement().height(region2Element.height());
+          }
+
+          // For horizontal gutters
+          if (gutter.orientation == 'horizontal') {
+            var top = region2Element.offset().top - GUTTER_SIZE;
+            var left = region2Element.offset().left;
+            // Position the gutter against the related regions position
+            gutter.getElement().css('top', top);
+            gutter.getElement().css('left', left);
+            gutter.getElement().width(region2Element.width());
+          }
+
+        }
+        else {
+          // @todo: look into this case
+        }
+      }
+    }
   };
 
   // Creates an instance of the Gutter collection for keeping track of gutters.
