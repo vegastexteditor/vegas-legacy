@@ -30,7 +30,6 @@
 
   vegas.utils = {
     // Who knows may change up library... DEPRECIATED. Sticking with jQuery dependency, will call explicitly
-    extend: global.jQuery.extend,
     tpl_cache: {},
 
     // Uhhh need to remove this trash... standardize vegas.on / vegas.trigger
@@ -627,6 +626,59 @@
 
   };
 
+  vegas.utils.extend = function (dest, source) {
+    var key;
+    for (key in source) {
+      dest[key] = source[key];
+    }
+  };
+
+  var collection = function collection (array) {
+
+    if (array && array.length) {
+      for (var i = 0; i < array.length; i++) {
+        this[i] = array[i];
+      }
+      this.length = array.length;
+    }
+    else {
+      this.length = 0;
+    }
+
+    this.pop = Array.prototype.pop;
+    this.push = Array.prototype.push;
+    this.reverse = Array.prototype.reverse;
+    this.shift = Array.prototype.shift;
+    this.sort = Array.prototype.sort;
+    this.splice = Array.prototype.splice;
+    this.unshift = Array.prototype.unshift;
+    this.concat = Array.prototype.concat;
+    this.join = Array.prototype.join;
+    this.slice = Array.prototype.slice;
+
+  };
+
+  collection.prototype.each = function (iterator, context) {
+    var obj = this;
+    if (Array.prototype.forEach && obj.forEach === Array.prototype.forEach) {
+      obj.forEach(iterator, context);
+    } else if (obj.length === +obj.length) {
+      for (var i = 0, l = obj.length; i < l; i++) {
+        if (i in obj && iterator.call(context, obj[i], i, obj) === {}) return;
+      }
+    } else {
+      for (var key in obj) {
+        if (hasOwnProperty.call(obj, key)) {
+          if (iterator.call(context, obj[key], key, obj) === {}) return;
+        }
+      }
+    }
+  };
+
+  collection.prototype.forEach = collection.prototype.each;
+
+  vegas.utils.collection = collection;
+
   /**
    * Helper Object for working with a collection of traditional objects.
    *
@@ -637,8 +689,8 @@
    * what is in the array like collection.
    */
   vegas.utils.ObjectCollection = function (collection, trackHash) {
-    vegas.utils.makeObject(this, arguments);
-    this.length = 0;
+    vegas.utils.makeObject(this, arguments, vegas.utils.collection);
+
     this.hash = {};
     this.trackHash = trackHash || true;
 
@@ -650,18 +702,9 @@
     return this;
   };
 
-  vegas.utils.ObjectCollection.prototype = {
 
-    // Bring in native array functions
-    push: Array.prototype.push,
-    pop: Array.prototype.pop,
-    slice: Array.prototype.slice,
-    splice: Array.prototype.splice,
-    shift: Array.prototype.shift,
-    unshift: Array.prototype.unshift,
-    sort: Array.prototype.sort,
-    reverse: Array.prototype.reverse,
-    concat: Array.prototype.concat,
+
+  vegas.utils.ObjectCollection.prototype = {
 
     /**
      * Adds an object or objects to the collection, can have an optional position
