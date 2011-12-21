@@ -287,8 +287,8 @@
       parentRegion.updateFamilyRefs();
 
       // Reflow regions and gutter positions
-      vegas.regions.reflow();
-      vegas.gutters.reflow();
+      vegas.regions.reflow(parentRegion);
+      vegas.gutters.reflow(parentRegion);
 
     },
 
@@ -614,9 +614,11 @@
       return childlessRegions;
     },
 
-    reflow: function () {
+    reflow: function (region) {
 
-      var region = vegas.regions[0];
+      var self = this;
+
+      region = region || vegas.regions[0];
 
       resizeChildren(region);
 
@@ -659,10 +661,30 @@
           console.log(pair[0].getElement());
           console.log(pair[1].getElement());
 
+/*
+          if (typeof(region.parent) == 'function') {
+            debugger;
+            pair1Element.height(parentElement.height());
+            pair2Element.height(parentElement.height());
+          }
+
+            var pairHeight = pair1Element.height() + pair2Element.height() + GUTTER_SIZE;
+            var parentElementHeight = parentElement.height();
+            // The width of the region pair does not fit into the parent region.
+            //if (pairHeight > parentElementHeight) {
+              // Get the amount of pixels its going to take for us to match the parent region.
+              var difference = parentElementHeight - pairHeight;
+              var first = pair1Element.height(), second = difference;
+              pair1Element.height(first);
+              pair2Element.height(first + difference);
+            //}
+*/
+
           resizeChildren(pair[0]);
           resizeChildren(pair[1]);
 
         }
+
       }
 
 

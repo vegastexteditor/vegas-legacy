@@ -38,7 +38,7 @@
         init: function (data) {
           this.component = data.component || null;
         },
-        
+
         remove: function () {
 
         },
@@ -94,21 +94,21 @@
           this.attachTabDragEvent();
           this.attachTabCloseEvent();
         },
-        
+
         getTabTargetAreas: function () {
-          
+
           var targetAreas = [],
               targetArea,
               regionPane,
               regionPaneOffset;
-          
+
           var regionPanes = jQuery('.regionPane');
           var targetPadding = 10;
 
           for (var i = 0; i < regionPanes.length; i++) {
             regionPane = jQuery(regionPanes[i]);
             regionPaneOffset = regionPane.offset();
-            
+
             targetArea = {
               top: regionPaneOffset.top - targetPadding,
               bottom: regionPaneOffset.top + regionPane.outerHeight(true) + targetPadding,
@@ -116,15 +116,15 @@
               right: regionPaneOffset.left + regionPane.outerWidth(true) + targetPadding,
               element: regionPane
             };
-            
+
             targetAreas.push(targetArea);
 
           }
-          
+
           return targetAreas;
-          
+
         },
-        
+
         getOffsets: function (element) {
             var tabs = element.parents('.tabs').find('.tab'),
                 tabOffset;
@@ -143,20 +143,20 @@
         },
 
         adjustOffsets: function () {
-          
+
         },
-        
+
         attachTabDragEvent: function () {
-          
+
           jQuery(document).bind('mousedown', function (eDown) {
-            
-            
+
+
           });
-          
+
         },
 
         attachTabDragEventOld: function () {
-          
+
           var self = this;
 
           jQuery(document).bind('mousedown', function (eDown) {
@@ -167,9 +167,9 @@
             var tabContainer = tabElement.parents('.tabs');
             var tabElementWidth = tabElement.outerWidth();
             var tabElementOffset = tabElement.offset();
-            
+
             var datshiot = self.getOffsets(tabElement);
-            
+
             var offsets = datshiot.offsets;
             var offsetsElements =  datshiot.elements;
 
@@ -195,17 +195,17 @@
             var ghostElementStyle = ghostElement[0].style;
 
             var mode = 'horizontal';
-            
+
             if (mode == 'horizontal') {
               ghostElementStyle.top = tabElementOffset.top + 'px';
             }
 
             var dragX,
                 lastDropPosition;
-                
-                
+
+
             var eDragStop = function () {
-              
+
             };
 
             var drag = function (eDrag) {
@@ -227,11 +227,11 @@
               if (mode == 'horizontal') {
                 ghostElementStyle.left = (dragX - offsetLeft) + 'px';
               }
-              
+
               var tabElementMousedOver = false,
                   offsetx,
                   middleOfTabMousedOver;
-              
+
               // Loop through the tab positions and find out which one we are at.
               for (var i = 0; i < offsets.length; i++) {
                 offsetx = offsets[i];
@@ -259,7 +259,7 @@
 
                 // At a new tab position (different than the last)
                 if (lastDropPosition !== dropPosition) {
-                  
+
                   tabContainer.find('.spacer').animate({width:1}, 750, function () {
                     jQuery(this).remove();
                   });
@@ -275,7 +275,7 @@
 
                 }
 
-                
+
               }
 
 
@@ -286,7 +286,7 @@
             jQuery(document).bind('mouseup', function dragStop(eDragStop) {
               // when the dragging stops
               tabContainer.find('.spacer').replace(ghostElementStyle);
-              
+
 
               jQuery(document).unbind('mousemove', drag);
               jQuery(document).unbind('mouseup', dragStop);

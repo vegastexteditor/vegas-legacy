@@ -828,9 +828,12 @@
       }
 
       if (!element || !element.id) {
+        /*
         console.error('invalid element passed.', (element), (element.id));
         console.trace();
         debugger;
+        */
+        return false;
       }
 
       var split = element.id.split('-');

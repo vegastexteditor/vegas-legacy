@@ -1,7 +1,4 @@
 /* line 1, src/vegas.scss */
-html body.cusror-ns-resize * {
-  cursor:ns-resize !important;
-}
 html body * {
   cursor: default;
   -moz-user-select: none;
@@ -9,6 +6,12 @@ html body * {
   -webkit-user-select: none;
   user-select: none;
 }
+
+html body.cusror-ns-resize * {
+  cursor:ns-resize !important;
+}
+
+.cursor-ns *{cursor:ns-resize !important}
 
 /* line 9, src/vegas.scss */
 .application {
@@ -473,3 +476,4 @@ buttons {
 .gutterGhost {
   opacity:.5;
 }
+
