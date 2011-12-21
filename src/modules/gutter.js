@@ -64,7 +64,7 @@
       var gutterElement;
       if (orientation == 'vertical') {
 
-        var region = regionPair[0].element;
+        var region = regionPair[0].getElement();
         var gutterTop = region.offset().top;
         var gutterLeft = region.offset().left + region.width();
         var gutterWidth = GUTTER_SIZE;
@@ -74,7 +74,7 @@
       }
       else if (orientation == 'horizontal') {
 
-        var region = regionPair[0].element;
+        var region = regionPair[0].getElement();
         var gutterTop = region.offset().top + region.height();
         var gutterLeft = region.offset().left;
         var gutterWidth = region.width();
@@ -94,7 +94,6 @@
       gutterElement.appendTo(document.body);
 
       // Let the gutter object know the element it created.
-      this.element = gutterElement;
 
       // Let the region pair know about its gutter.
       regionPair[0].gutter = this;
@@ -113,7 +112,7 @@
      * Finds the highest Y position in which the gutter can be dragged to.
      */
     getLowestY: function () {
-      var region = this.regionPair[0].element;
+      var region = this.regionPair[0].getElement();
       var regionSet = region.find('.region');
 
       var pairs = {};
@@ -147,7 +146,7 @@
      * Finds the lowest Y position in which the gutter can be dragged to.
      */
     getHighestY: function () {
-      var region = this.regionPair[1].element;
+      var region = this.regionPair[1].getElement();
       var regionSet = region.find('.region');
 
       var pairs = {};
@@ -175,10 +174,12 @@
       else {
         return region.offset().top + region.height() - REGION_MAX_HEIGHT;
       }
+
     },
 
     remove: function () {
-      this.getElement().remove();
+      var element = this.getElement();
+      element.remove();
     }
 
   };
@@ -209,10 +210,17 @@
 
         function onDragStart (x, y, gutterElement) {
 
+          var id = gutterElement.attr('id');//.replace(//, '');
+
           gutter = vegas.gutters.fromElement(gutterElement);
 
-          region1 = gutter.regionPair[0].element;
-          region2 = gutter.regionPair[1].element;
+          if (!gutter) {
+            console.error('could not get gutter object from element');
+            debugger;
+          }
+
+          region1 = gutter.regionPair[0].getElement();
+          region2 = gutter.regionPair[1].getElement();
           region1Height = region1.height();
           region2Height = region2.height();
           region1Width = region1.width();
@@ -225,6 +233,10 @@
           // Create the ghost gutter that will be dragged around, the original
           // gutter element will be left in place.
           gutterGhost = gutterElement.clone().addClass('gutterGhost');
+
+          // Adjust the ID of the ghost element.
+          gutterGhost.attr('id', 'ghost-temp' + gutterGhost.attr('id'));
+
           jQuery(document.body).append(gutterGhost);
 
           dragStartPos = gutterElement.position();
@@ -281,7 +293,9 @@
           };
           gutterElement.remove();
           gutterGhost.removeClass('gutterGhost');
-          gutter.element = gutterGhost;
+          gutterGhost.attr('id', gutterGhost.attr('id').replace(/ghost-temp/, ''));
+          //console.log(gutterGhost);
+          //gutter.element = gutterGhost;
 
           if (gutter.orientation == 'horizontal') {
             jQuery(document.body).removeClass('cursor-ns');

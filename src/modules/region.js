@@ -643,6 +643,22 @@
             }
           }
 
+          if (orientation == 'horizontal') {
+            var pairHeight = pair1Element.height() + pair2Element.height() + GUTTER_SIZE;
+            var parentElementHeight = parentElement.height();
+            // The height of the region pair does not fit into the parent region.
+            if (pairHeight < parentElementHeight) {
+              // Get the amount of pixels its going to take for us to match the parent region.
+              var difference = parentElementHeight - pairHeight;
+              var first = Math.floor(difference / 2), second = difference - first;
+              pair1Element.height(pair1Element.height() + first);
+              pair2Element.height(pair2Element.height() + second);
+            }
+          }
+
+          console.log(pair[0].getElement());
+          console.log(pair[1].getElement());
+
           resizeChildren(pair[0]);
           resizeChildren(pair[1]);
 
